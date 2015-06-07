@@ -1,2 +1,2 @@
 # looper
-An audio oooper written in HTML5 and JS. 
+An audio looper written in HTML5 and JS. 
