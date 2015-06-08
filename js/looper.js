@@ -11,6 +11,7 @@
         
         var reader = new FileReader();
         var loops = [];
+        var globalVolume = 1;
         
         reader.onload = function(ev) {
             var data = ev.target.result;
@@ -43,17 +44,29 @@
         /**
          * Global volume control.
          */
-        $(document).on('change-all-volumes', function() {
-            
+        $(document).on('change-all-volumes', function(ev, level) {
+            globalVolume = level;
+            for (var i = 0; i < loops.length; i++) {
+                if (loops[i].timeout) {
+                    loops[i].volume(level);
+                }
+            }
         });
         
         /**
-         * File read.
+         * File read on "Create" click.
          */
         $(document).on('click', '#looper-button', function(ev) {
             ev.preventDefault();
             var file = $('input[name="looper-file"]');
             reader.readAsDataURL(file[0].files[0])
+        });
+        
+        /**
+         * Volume change handler.
+         */
+        $(document).on('mousemove', 'input[name=loopers-volume]', function() {
+            $(document).trigger('change-all-volumes', this.value / 100);
         });
         
         /**
@@ -66,6 +79,7 @@
                 $(document).trigger('stop-all-loops');
                 console.log('playing loop...');
                 loop.start('loop1');
+                loop.volume(globalVolume);
             });
             return $('<div></div>').addClass('col-md-1 col-sm-2 col-xs-4').html(button);
         };
