@@ -2,6 +2,10 @@
     height: auto;
 }
 
-div#looper-loops div {
+div.container div {
     padding-top: 10px;
+}
+
+.navbar-inverse {
+    background-image: linear-gradient(to bottom, #422664 0px, #180e25 100%)
 }
