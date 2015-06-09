@@ -21,6 +21,10 @@
             if (data.match(/^data:audio\/mpeg/)) {
                 raiseAlert('Using MP3s may produce unexpected behavior, such as disjoined loops.', 'warning');
             }
+            if (!data.match(/^data:(audio\/(mpeg|wav|)|video\/ogg)/)) {
+                raiseAlert('The file must be a WAV, MP3 or OGG audio file.', 'danger');
+                return;
+            }
             loopH5.on('loadedmetadata', function() {
                 var loop = new SeamlessLoop();
                 console.log(this.duration * 1000);
