@@ -26,6 +26,7 @@
                 loop.callback(function () {
                     $('div#looper-loops').append(loopElement($('input[name=looper-name]').val(), loop));
                 });
+                loopH5.remove();
             });
         };
         
