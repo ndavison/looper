@@ -70,9 +70,17 @@
          * Volume change handler.
          */
         $(document).on('input', 'input[name=loopers-volume]', function(ev) {
-            console.log(ev);
             $(document).trigger('change-all-volumes', this.value / 100);
         });
+        
+        /**
+         * Stop loops on body click.
+         */
+        $(document).on('click', 'html', function(ev) {
+            if (!$(ev.target).is('input, button')) {
+                $(document).trigger('stop-all-loops');
+            }
+        })
         
         /**
          * Helper function to generate a loop's button.
