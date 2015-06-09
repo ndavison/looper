@@ -3,16 +3,16 @@
 <head>
     <title>Looper prototype</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" />
-    <link href="css/looper.css" rel="stylesheet" />
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="css/looper.css" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-inverse">
       <div class="container-fluid">
         <div class="container">
             <div class="navbar-header">
-              <a class="navbar-brand" href="/looper">Looper</a>
+              <a href="/looper"><img src="images/looper-logo-sm.png" alt="Looper logo"></a>
             </div>
         </div>
       </div>
@@ -21,18 +21,18 @@
         <div class="col-sm-12">
             <form>
                 <div class="col-sm-4">
-                    <input type="text" class="form-control" name="looper-name" placeholder="Loop name" required />
+                    <input type="text" class="form-control" name="looper-name" placeholder="Loop name" required>
                 </div>
                 <div class="col-sm-4">
-                    <input type="file" class="form-control" name="looper-file" required />
+                    <input type="file" class="form-control" name="looper-file" required>
                 </div>
                 <div class="col-sm-4">
-                    <input type="submit" id="looper-button" class="btn btn-primary" value="Create" />
+                    <input type="submit" id="looper-button" class="btn btn-primary" value="Create">
                 </div>
             </form>
         </div>
         <div class="col-sm-12">
-            <input type="range" min="0" max="100" name="loopers-volume" value="100" />
+            <input type="range" min="0" max="100" name="loopers-volume" value="100">
         </div>
         <div id="looper-alerts" class="col-sm-12"></div>
         <div id="looper-loops" class="col-sm-12"></div>

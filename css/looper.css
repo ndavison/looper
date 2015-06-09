@@ -9,3 +9,7 @@ div.container div {
 .navbar-inverse {
     background-image: linear-gradient(to bottom, #422664 0px, #180e25 100%)
 }
+
+.navbar img {
+    padding-bottom: 10px;
+}
