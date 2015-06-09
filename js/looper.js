@@ -18,6 +18,9 @@
                         
             var loopH5 = $('<audio></audio>');
             loopH5.attr('src', data);
+            if (data.match(/^data:audio\/mpeg/)) {
+                raiseAlert('Using MP3s may produce unexpected behavior, such as disjoined loops.', 'warning');
+            }
             loopH5.on('loadedmetadata', function() {
                 var loop = new SeamlessLoop();
                 console.log(this.duration * 1000);
@@ -66,7 +69,8 @@
         /**
          * Volume change handler.
          */
-        $(document).on('mousemove', 'input[name=loopers-volume]', function() {
+        $(document).on('input', 'input[name=loopers-volume]', function(ev) {
+            console.log(ev);
             $(document).trigger('change-all-volumes', this.value / 100);
         });
         
@@ -83,6 +87,16 @@
                 loop.volume(globalVolume);
             });
             return $('<div></div>').addClass('col-md-1 col-sm-2 col-xs-4').html(button);
+        };
+        
+        /**
+         * Helper function to generate an alert.
+         */
+        var raiseAlert = function(msg, type) {
+            var alert = $('<div></div>').addClass('alert alert-dismissible alert-' + type).html(msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>').hide();
+            $('div#looper-alerts').html(alert);
+            alert.fadeIn(200);
+            return alert;
         };
     });
     
