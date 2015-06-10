@@ -34,13 +34,9 @@ define(['backbone', 'jquery', 'models/audiofiles', 'models/audiofile'], function
         
         initialize: function() {
             this.audioFiles = new AudioFiles();
-            this.render();
         },
         
-        render: function() {
-            var view = this;
-            view.getView('/looper/views/createform.html', view.$el);
-        }
+        render: function() {}
         
     });
     
