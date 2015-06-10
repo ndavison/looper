@@ -1,18 +1,27 @@
 {
   "name": "looper",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "https://github.com/ndavison/looper",
   "authors": [
     "Nathan Davison <ndavison85@gmail.com>"
   ],
-  "description": "Audio looping web app.",
+  "description": "Audio looper written in HTML5 and JS.",
   "main": "index.html",
   "moduleType": [
+    "amd",
     "globals"
+  ],
+  "keywords": [
+    "audio",
+    "looper",
+    "looper",
+    "dj"
   ],
   "license": "MIT",
   "dependencies": {
+    "backbone": "~1.2.1",
     "bootstrap": "3.3.4",
-    "jquery": "2.1.4"
+    "jquery": "2.1.4",
+    "requirejs": "~2.1.18"
   }
 }

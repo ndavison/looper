@@ -8,7 +8,7 @@
     <link href="css/looper.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-inverse">
+    <nav id="view-navbar" class="navbar navbar-inverse">
       <div class="container-fluid">
         <div class="container">
             <div class="navbar-header">
@@ -19,27 +19,18 @@
     </nav>
     <div class="container">
         <div class="col-sm-12">
-            <form>
-                <div class="col-sm-4">
-                    <input type="text" class="form-control" name="looper-name" placeholder="Loop name" required>
-                </div>
-                <div class="col-sm-4">
-                    <input type="file" class="form-control" name="looper-file" required>
-                </div>
-                <div class="col-sm-4">
-                    <input type="submit" id="looper-button" class="btn btn-primary" value="Create">
-                </div>
+            <form id="view-createform">
             </form>
         </div>
-        <div class="col-sm-12">
+        <div id="view-volume" class="col-sm-12">
             <input type="range" min="0" max="100" name="loopers-volume" value="100">
         </div>
-        <div id="looper-alerts" class="col-sm-12"></div>
-        <div id="looper-loops" class="col-sm-12"></div>
+        <div id="view-pitch" class="col-sm-12">
+            <input type="range" min="50" max="200" name="loopers-pitch" value="100">
+        </div>
+        <div id="view-alerts" class="col-sm-12"></div>
+        <div id="view-loops" class="col-sm-12"></div>
     </div>
-    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/SeamlessLoop.js"></script>
-    <script type="text/javascript" src="js/looper.js"></script>
+    <script type="text/javascript" src="bower_components/requirejs/require.js" data-main="/looper/js/main.js"></script>
 </body>
 </html
