@@ -8,7 +8,7 @@
 define(['backbone'], function(Backbone) {
    
     var View = Backbone.View.extend({
-        
+                       
         model: null,
         
         attributes: {
@@ -20,8 +20,7 @@ define(['backbone'], function(Backbone) {
         },
                 
         clicked: function(ev) {
-            this.app.dispatcher.trigger('play-loop', this.model);
-            this.model.playLoop();
+            this.app.dispatcher.trigger('saving-loops', this.model);
         },
         
         initialize: function() {},

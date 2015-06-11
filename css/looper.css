@@ -13,3 +13,11 @@ div.container div {
 .navbar img {
     padding-bottom: 10px;
 }
+
+div#loop-buttons button {
+    margin: 0px 10px 10px 0px;
+}
+
+p#signin-msg {
+    margin-right: 20px;
+}

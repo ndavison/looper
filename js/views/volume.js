@@ -16,14 +16,14 @@ define(['backbone'], function(Backbone) {
         },
                 
         changed: function(ev) {
-            this.app.dispatcher.trigger('change-all-volumes', this.getVolume());
+            this.app.dispatcher.trigger('change-volume', this.getVolume());
         },
         
         getVolume: function() {
             return (this.$el.find('input[name=loopers-volume]').val() / 100);
         },
         
-        initialize: function(options) {},
+        initialize: function() {},
         
         render: function() {}
         

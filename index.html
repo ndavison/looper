@@ -11,9 +11,10 @@
     <nav id="view-navbar" class="navbar navbar-inverse">
       <div class="container-fluid">
         <div class="container">
-            <div class="navbar-header">
+            <div class="col-xs-6 navbar-header">
               <a href="/looper"><img src="images/looper-logo-sm.png" alt="Looper logo"></a>
             </div>
+            <div class="col-xs-6" id="navbar-buttons"></div>
         </div>
       </div>
     </nav>
@@ -21,24 +22,33 @@
         <div class="col-sm-12">
             <form id="view-createform">
                 <div class="col-sm-4">
-                    <input type="text" class="form-control" name="looper-name" placeholder="Loop name" required>
+                    <input type="text" class="form-control" name="looper-name" placeholder="Loop name">
                 </div>
                 <div class="col-sm-4">
-                    <input type="file" class="form-control" name="looper-file" required>
+                    <input type="file" class="form-control" name="looper-file">
                 </div>
                 <div class="col-sm-4">
-                    <input type="submit" id="looper-button" class="btn btn-primary" value="Create">
+                    <button id="create-loop" class="btn btn-primary">Create</button>
                 </div>
             </form>
         </div>
         <div id="view-volume" class="col-sm-12">
-            <label>Volume:</label><input type="range" min="0" max="100" name="loopers-volume" value="100">
+            <div class="col-sm-12">
+                <label>Volume:</label><input type="range" min="0" max="100" name="loopers-volume" value="100" class="form-control">
+            </div>
         </div>
         <div id="view-pitch" class="col-sm-12">
-            <label>Pitch:</label><input type="range" min="50" max="200" name="loopers-pitch" value="100">
+            <div class="col-sm-12">
+                <label>Pitch:</label><input type="range" min="50" max="200" name="loopers-pitch" value="100" class="form-control">
+            </div>
         </div>
-        <div id="view-alerts" class="col-sm-12"></div>
-        <div id="view-loops" class="col-sm-12"></div>
+        <div class="col-sm-12">
+            <div id="view-alerts" class="col-sm-12"></div>
+        <div class="col-sm-12">
+        <div id="view-loops" class="col-sm-12">
+            <div id="loop-buttons" class="col-sm-12"></div>
+            <div id="loops-utility-buttons" class="col-md-12"></div>
+        </div>
     </div>
     <script type="text/javascript" src="bower_components/requirejs/require.js" data-main="/looper/js/main.js"></script>
 </body>

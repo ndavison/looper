@@ -14,10 +14,10 @@ define(['backbone', 'jquery', 'models/audiofiles', 'models/audiofile'], function
         audioFiles: null,
         
         events: {
-            'submit': 'formSubmit'
+            'click button#create-loop': 'createLoop'
         },
         
-        formSubmit: function(ev) {
+        createLoop: function(ev) {
             ev.preventDefault();
             var view = this;
             var file = this.$el.find('input[name="looper-file"]');

@@ -14,6 +14,12 @@ requirejs.config({
         bootstrap: '../bower_components/bootstrap/dist/js/bootstrap.min',
         backbone: '../bower_components/backbone/backbone-min',
         underscore: '../bower_components/underscore/underscore-min',
+        dropbox: '../bower_components/dropbox/lib/dropbox.min'
+    },
+    shim: {
+        'dropbox': {
+            exports: 'Dropbox'
+        }
     },
     urlArgs: "bust=" +  (new Date()).getTime()
 });

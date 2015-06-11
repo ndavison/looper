@@ -16,14 +16,14 @@ define(['backbone'], function(Backbone) {
         },
                 
         changed: function(ev) {
-            this.app.dispatcher.trigger('change-all-pitches', this.getPitch());
+            this.app.dispatcher.trigger('change-pitch', this.getPitch());
         },
         
         getPitch: function() {
             return (this.$el.find('input[name=loopers-pitch]').val() / 100);
         },
         
-        initialize: function(options) {},
+        initialize: function() {},
         
         render: function() {}
         

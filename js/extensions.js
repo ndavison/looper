@@ -22,14 +22,33 @@ define(['backbone', 'jquery'], function(Backbone, $) {
             Backbone.Collection.prototype.app = app;
         
             /**
-             * A common view AJAX request and display.
+             * A store for template files to be cached.
              */
-            Backbone.View.prototype.getView = function(view, el, cb) {
+            Backbone.View.prototype.templates = {};
+        
+            /**
+             * Retrieve this view's HTML via AJAX or the template store.
+             */
+            Backbone.View.prototype.getTemplate = function(template, data, cb) {
+                var view = this;
                 cb = cb || function() {};
-                $.get(view, function(res) {
-                    el.hide().html(res).fadeIn(300, cb);
-                });
+                data = data || {};
+                var makeTemplate = function(res, data, cb) {
+                    res = _.template(res);
+                    var compiled = res(data);
+                    cb(compiled);
+                };
+                if (Backbone.View.prototype.templates[template]) {
+                    res = Backbone.View.prototype.templates[template];
+                    makeTemplate(res, data, cb);
+                } else {
+                    $.get(template, function(res) {
+                        Backbone.View.prototype.templates[template] = res;
+                        makeTemplate(res, data, cb);
+                    });
+                }
             };
+            
         }
         
     };
