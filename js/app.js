@@ -7,7 +7,7 @@
 
 "use strict"
  
-define(['extensions', 'backbone', 'underscore', 'models/dropbox', 'views/alerts', 'views/navbar', 'views/createform', 'views/volume', 'views/pitch', 'views/loops'], function(Extensions, Backbone, _, Dropbox, AlertsView, NavBarView, CreateFormView, VolumeView, PitchView, LoopsView) {
+define(['extensions', 'backbone', 'underscore', 'models/dropbox', 'views/alerts', 'views/navbar', 'views/createform', 'views/controls', 'views/loops', 'views/looputilitybuttons'], function(Extensions, Backbone, _, Dropbox, AlertsView, NavBarView, CreateFormView, ControlsView, LoopsView, LoopUtilityButtonsView) {
     
     var App = function() {
 
@@ -37,11 +37,12 @@ define(['extensions', 'backbone', 'underscore', 'models/dropbox', 'views/alerts'
              */
             app.views.navbar = new NavBarView({model: app.models.dropBox});
             app.views.createForm = new CreateFormView();
-            app.views.volume = new VolumeView();
-            app.views.pitch = new PitchView();
+            app.views.controls = new ControlsView();
             app.views.alerts = new AlertsView();
             app.views.loops = new LoopsView();
+            app.views.looputilitybuttons = new LoopUtilityButtonsView();
             
+            app.models.dropBox.auth({interactive: false});
         };
     };
     

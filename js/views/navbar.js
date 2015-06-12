@@ -30,40 +30,35 @@ define(['backbone', 'models/dropbox'], function(Backbone, Dropbox) {
             this.model.signOut();
         },
         
-        toggleSignInButton: function() {
+        signedIn: function() {
             var view = this;
             if (view.$el.find('button#auth-btn').length > 0) {
                 view.$el.find('button#auth-btn').remove();
-            } else {
-                view.getTemplate('/looper/views/signin.html', {}, function(res) {
-                    view.$el.find('#navbar-buttons').append(res);
-                });
             }
+            view.model.getUserInfo(function(info) {
+                view.getTemplate('/looper/views/signout.html', {}, function(res) {
+                    view.show(res, view.$el.find('#navbar-buttons'), true);
+                    view.getTemplate('/looper/views/signinmsg.html', {name: info.name}, function(res) {
+                        view.show(res, view.$el.find('#navbar-buttons'), true);
+                    }); 
+                });
+            });
         },
-                
-        toggleSignOutButton: function() {
+        
+        signedOut: function() {
             var view = this;
             if (view.$el.find('button#signout-btn').length > 0) {
                 view.$el.find('p#signin-msg').remove();
                 view.$el.find('button#signout-btn').remove();
-            } else {
-                view.model.getUserInfo(function(info) {
-                    view.getTemplate('/looper/views/signout.html', {}, function(res) {
-                        view.$el.find('#navbar-buttons').append(res);
-                        view.getTemplate('/looper/views/signinmsg.html', {name: info.name}, function(res) {
-                            view.$el.find('#navbar-buttons').append(res);
-                        }); 
-                    });
-                });
             }
+            view.getTemplate('/looper/views/signin.html', {}, function(res) {
+                view.show(res, view.$el.find('#navbar-buttons'), true);
+            });
         },
-        
+                
         initialize: function() {
-            this.app.dispatcher.on('signed-in', this.toggleSignInButton, this);
-            this.app.dispatcher.on('signed-in', this.toggleSignOutButton, this);
-            this.app.dispatcher.on('signed-out', this.toggleSignInButton, this);
-            this.app.dispatcher.on('signed-out', this.toggleSignOutButton, this);
-            this.toggleSignInButton();
+            this.app.dispatcher.on('signed-in', this.signedIn, this);;
+            this.app.dispatcher.on('signed-out', this.signedOut, this);
         },
         
         render: function() {}
