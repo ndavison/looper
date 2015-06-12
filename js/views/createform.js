@@ -14,7 +14,8 @@ define(['backbone', 'jquery', 'models/audiofiles', 'models/audiofile'], function
         audioFiles: null,
         
         events: {
-            'click button#create-loop': 'createLoop'
+            'click button#create-loop': 'createLoop',
+            'click button#demo-loop': 'demoLoop'
         },
         
         createLoop: function(ev) {
@@ -30,6 +31,30 @@ define(['backbone', 'jquery', 'models/audiofiles', 'models/audiofile'], function
                 view.audioFiles.add(audioFile);
                 view.app.dispatcher.trigger('loop-added', view.$el.find('input[name=looper-name]').val(), audioFile.get('loopId'));
             });
+        },
+        
+        demoLoop: function(ev) {
+            ev.preventDefault();
+            var view = this;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/audioclip-1433848478.wav", true);
+            xhr.responseType = "blob";
+         
+            var audioFile = new AudioFile({context: view.audioFiles.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
+            
+            xhr.addEventListener("load", function () {
+                if (xhr.status === 200) {
+                    audioFile.reader.onload = function (ev) {
+                        audioFile.attributes.data = ev.target.result;
+                        view.audioFiles.add(audioFile);
+                        console.log(view.audioFiles);
+                        view.app.dispatcher.trigger('loop-added', 'Demo Loop', audioFile.get('loopId'));
+                    };
+                    audioFile.reader.readAsArrayBuffer(xhr.response);
+                }
+            }, false);
+            xhr.send();
+
         },
         
         initialize: function() {
