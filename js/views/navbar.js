@@ -20,9 +20,7 @@ define(['backbone', 'models/dropbox'], function(Backbone, Dropbox) {
         
         auth: function(ev) {
             ev.preventDefault();
-            this.model.auth(function(dropbox) {
-                console.log(dropbox.getUserInfo());
-            });
+            this.model.auth();
         },
         
         signout: function(ev) {
@@ -35,7 +33,7 @@ define(['backbone', 'models/dropbox'], function(Backbone, Dropbox) {
             if (view.$el.find('button#auth-btn').length > 0) {
                 view.$el.find('button#auth-btn').remove();
             }
-            view.model.getUserInfo(function(info) {
+            view.model.getAccountInfo(function(info) {
                 view.getTemplate('/looper/views/signout.html', {}, function(res) {
                     view.show(res, view.$el.find('#navbar-buttons'), true);
                     view.getTemplate('/looper/views/signinmsg.html', {name: info.name}, function(res) {

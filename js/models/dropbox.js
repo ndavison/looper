@@ -9,7 +9,7 @@ define(['backbone', 'dropbox'], function(Backbone, Dropox) {
     
     var Model = Backbone.Model.extend({
         
-        getUserInfo: function(cb) {
+        getAccountInfo: function(cb) {
             cb = cb || function() {};
             this.client.getAccountInfo(function(error, info) {
                 if (error) {
@@ -35,7 +35,6 @@ define(['backbone', 'dropbox'], function(Backbone, Dropox) {
                     model.app.dispatcher.trigger('signed-out', model);
                 }
                 cb(model);
-                return;
             });
         },
         
