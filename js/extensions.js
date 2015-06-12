@@ -42,9 +42,28 @@ define(['backbone', 'jquery'], function(Backbone, $) {
                     res = Backbone.View.prototype.templates[template];
                     makeTemplate(res, data, cb);
                 } else {
-                    $.get(template, function(res) {
+                    $.get(template + "?bust=" +  (new Date()).getTime(), function(res) {
                         Backbone.View.prototype.templates[template] = res;
                         makeTemplate(res, data, cb);
+                    });
+                }
+            };
+            
+            /**
+             * A standard way to show a view.
+             */
+            Backbone.View.prototype.show = function(contents, el, append, cb) {
+                contents = contents || this.$el.html();
+                el = el ? $(el) : this.$el;
+                append = typeof append != 'undefined' ? append : false;
+                cb = cb || function () {};
+                if (append) {
+                    $(contents).hide().appendTo(el).fadeIn(300, function() {
+                        cb($(contents));
+                    });
+                } else {
+                    el.hide().html(contents).fadeIn(300, function() {
+                        cb($(contents));
                     });
                 }
             };
