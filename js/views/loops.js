@@ -5,34 +5,32 @@
  *
  */
 
-define(['backbone', 'views/loopbutton', 'views/saveloopsbutton'], function(Backbone, LoopButtonView, SaveLoopsButtonView) {
+define(['backbone'], function(Backbone) {
    
     var View = Backbone.View.extend({
         
         el: '#view-loops',
         
-        addLoopButton: function(name, audioFile) {
+        events: {
+            'click button': 'playLoop'
+        },
+        
+        addLoopButton: function(name, loopId) {
             var view = this;
-            var button = new LoopButtonView({model: audioFile});
-            view.$el.find('div#loop-buttons').append(button.$el);
-            button.getTemplate('/looper/views/playloop.html', {name: name}, function(res) {
-                button.$el.html(res);
-                view.addSaveButton();
+            view.getTemplate('/looper/views/playloop.html', {name: name, loopId: loopId}, function(res) {
+                view.show(res, view.$el, true);
             });
         },
         
-        addSaveButton: function() {
-            var view = this;
-            if (view.$el.find('button#save-loops').length == 0) {
-                var button = new SaveLoopsButtonView({model: this.app.models.dropBox});
-                view.$el.find('div#loops-utility-buttons').append(button.$el);
-                button.getTemplate('/looper/views/saveloops.html', {}, function(res) {
-                    button.$el.html(res);
-                });
-            }
+        playLoop: function(ev) {
+            ev.preventDefault();
+            var target = ev.currentTarget;
+            this.app.dispatcher.trigger('play-loop', $(target).attr('data-loopid'));
         },
-        
-        initialize: function() {},
+                
+        initialize: function() {
+            this.app.dispatcher.on('loop-added', this.addLoopButton, this);
+        },
         
         render: function() {}
         

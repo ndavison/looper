@@ -21,14 +21,14 @@ define(['backbone', 'jquery', 'models/audiofiles', 'models/audiofile'], function
             ev.preventDefault();
             var view = this;
             var file = this.$el.find('input[name="looper-file"]');
-            var audioFile = new AudioFile({context: view.audioFiles.context, volume: view.app.views.volume.getVolume(), pitch: view.app.views.pitch.getPitch()});
+            var audioFile = new AudioFile({context: view.audioFiles.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
             audioFile.readFile(file[0].files[0], function(model) {
-                view.audioFiles.add(model);
                 if (!model.attributes.file.type.match(/^(audio\/(mpeg|wav|)|video\/ogg)/)) {
                     view.app.views.alerts.createAlert('The file must be a WAV, MP3 or OGG audio file.', 'danger');
                     return;
                 }
-                view.app.views.loops.addLoopButton(view.$el.find('input[name=looper-name]').val(), audioFile);
+                view.audioFiles.add(audioFile);
+                view.app.dispatcher.trigger('loop-added', view.$el.find('input[name=looper-name]').val(), audioFile.get('loopId'));
             });
         },
         

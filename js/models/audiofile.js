@@ -11,7 +11,9 @@ define(['backbone'], function(Backbone) {
         
         reader: new FileReader(),
         
-        initialize: function() {},
+        initialize: function() {
+            this.attributes.loopId = Math.random().toString(36).replace(/[^a-z]+/g, '');
+        },
         
         isPlaying: false,
         
@@ -56,14 +58,14 @@ define(['backbone'], function(Backbone) {
         
         volume: function(level) {
             this.attributes.volume = level;
-            if (this.isPlaying) {
+            if (this.isPlaying && level) {
                 this.attributes.gain.gain.value = level;
             }
         },
         
         pitch: function(level) {
             this.attributes.pitch = level;
-            if (this.isPlaying) {
+            if (this.isPlaying && level) {
                 this.attributes.source.playbackRate.value = level;
             }
         }
