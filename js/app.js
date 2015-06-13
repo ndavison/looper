@@ -42,6 +42,7 @@ define(['extensions', 'backbone', 'underscore', 'models/dropbox', 'models/audiof
             app.views.loops = new LoopsView({model: new AudioFiles()});
             app.views.looputilitybuttons = new LoopUtilityButtonsView();
             
+            // authenticate to Dropbox without interaction, in case the user has cached credentials
             app.models.dropBox.auth({interactive: false});
         };
     };

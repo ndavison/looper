@@ -10,18 +10,18 @@ define(['backbone', 'dropbox'], function(Backbone, Dropox) {
     var Model = Backbone.Model.extend({
         
         defaults: {
-            'dropboxURL': null,
+            'dirName': 'looper-audio',
             'owner': null
         },
         
-        prepare: function(options) {
-            cb = options.callback || function() {};
+        prepare: function(cb) {
+            cb = cb || function() {};
             var model = this;
-            model.client.stat(options.dirName, {}, function(error, dirStat) {
+            model.client.stat(model.get('dirName'), {}, function(error, dirStat) {
                 if (error || dirStat.isRemoved) {
                     console.log(error);
                     if (error && error.status == 404 || dirStat.isRemoved) {
-                        model.client.mkdir(options.dirName, function(error, dirStat) {
+                        model.client.mkdir(model.get('dirName'), function(error, dirStat) {
                             if (error) {
                                 console.log(error);
                                 return;
@@ -37,17 +37,33 @@ define(['backbone', 'dropbox'], function(Backbone, Dropox) {
             });
         },
         
-        saveFileToDropbox: function(file) {
+        saveFileToDropbox: function(loop) {
             var model = this;
-            if (file.data && file.path) {
-                model.client.writeFile(file.path, file.data, {}, function(error, fileStat) {
+            var path = model.get('dirName') + '/' + loop.get('loopId') + '.' + loop.get('fileExtension');
+            var data = loop.get('audioData');
+            if (data) {
+                model.client.writeFile(path, data, {}, function(error, fileStat) {
                     if (error) {
                         console.log(error);
                         return;
                     }
-                    model.app.dispatcher.trigger('file-saved', fileStat);
+                    model.app.dispatcher.trigger('file-saved', {stat: fileStat, loop: loop}); 
+                    model.getShareURL(path, loop);
                 });
             }
+        },
+        
+        getShareURL: function(path, loop) {
+            var model = this;
+            model.client.makeUrl(path, {downloadHack: true}, function(error, shareURL) {
+                if (error) {
+                    console.log(error);
+                    return;
+                }
+                if (loop) {
+                    loop.set('dropBoxURL', shareURL.url);
+                }
+            });
         },
         
         getAccountInfo: function(cb) {
