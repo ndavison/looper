@@ -9,6 +9,60 @@ define(['backbone', 'dropbox'], function(Backbone, Dropox) {
     
     var Model = Backbone.Model.extend({
         
+        defaults: {
+            'dropboxURL': null,
+            'owner': null
+        },
+        
+        saveFileToDropbox: function(file) {
+            var model = this;
+            if (file.data && file.path) {
+                var pathMatch = file.path.match(/^([^\/]+)\/?([^\/}]+)?$/);
+                if (pathMatch[1] && pathMatch[2]) {
+                    var dirName = pathMatch[1];
+                    var fileName = pathMatch[2];
+                    
+                    var mkdir = function(cb) {
+                        cb = cb || function() {};
+                        model.client.mkdir(dirName, function(error, dirStat) {
+                            if (error) {
+                                console.log(error);
+                                return;
+                            }
+                            cb();
+                        });
+                    };
+                    
+                    var createFile = function() {
+                        model.client.writeFile(file.path, file.data, {}, function(error, fileStat) {
+                            if (error) {
+                                console.log(error);
+                                return;
+                            }
+                            model.app.dispatcher.trigger('file-saved', fileStat);
+                            console.log(fileStat);
+                        });
+                    };
+                    
+                    model.client.stat(dirName, {}, function(error, dirStat) {
+                        if (error || dirStat.isRemoved) {
+                            console.log(error);
+                            if (error && error.status == 404 || dirStat.isRemoved) {
+                                mkdir(function() {
+                                    createFile();
+                                });
+                            } else {
+                                return;
+                            }
+                        } else {
+                            createFile();
+                        }
+                        console.log(dirStat);
+                    });
+                }
+            }
+        },
+        
         getAccountInfo: function(cb) {
             cb = cb || function() {};
             this.client.getAccountInfo(function(error, info) {
@@ -31,6 +85,9 @@ define(['backbone', 'dropbox'], function(Backbone, Dropox) {
                 }
                 if (model.client.isAuthenticated()) {
                     model.app.dispatcher.trigger('signed-in', model);
+                    model.getAccountInfo(function(info) {
+                        model.set('owner', info.uid);
+                    });
                 } else {
                     model.app.dispatcher.trigger('signed-out', model);
                 }
@@ -53,6 +110,7 @@ define(['backbone', 'dropbox'], function(Backbone, Dropox) {
         
         initialize: function() {
             var model = this;
+            model.app.dispatcher.on('save-loop', model.saveFileToDropbox, model);
             model.client = new Dropbox.Client({key: model.attributes.key});
             model.client.authDriver(new Dropbox.AuthDriver.Popup(
                 {receiverUrl: model.attributes.receiverURL})
