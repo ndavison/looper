@@ -34,9 +34,11 @@ define(['backbone', 'models/audiofile'], function(Backbone, AudioFile) {
         
         saveLoops: function() {
             var model = this;
-            this.forEach(function(loop) {
-                model.app.dispatcher.trigger('save-loop', {path: 'looper-audio/' + loop.get('loopId') + '.' + loop.get('fileExtension'), data: loop.get('audioData')});
-            });
+            model.app.dispatcher.trigger('dropbox-prepare', {dirName: 'looper-audio/', callback: function() {
+               model.forEach(function(loop) {
+                    model.app.dispatcher.trigger('save-loop', {path: 'looper-audio/' + loop.get('loopId') + '.' + loop.get('fileExtension'), data: loop.get('audioData')});
+                }); 
+            }});
         },
         
         initialize: function() {
