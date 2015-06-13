@@ -5,11 +5,11 @@
  *
  */
 
-define(['backbone', 'models/audiofile'], function(Backbone, AudioFile) {
+define(['backbone', 'models/loop'], function(Backbone, Loop) {
     
     var Collection = Backbone.Collection.extend({
         
-        model: AudioFile,
+        model: Loop,
         
         context: null,
                 
