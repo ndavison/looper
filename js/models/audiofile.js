@@ -28,6 +28,23 @@ define(['backbone'], function(Backbone) {
             };
         },
         
+        readFromURL: function(url, cb) {
+            var model = this;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.responseType = "blob";
+            xhr.addEventListener("load", function () {
+                if (xhr.status === 200) {
+                    model.reader.onload = function (ev) {
+                        model.attributes.data = ev.target.result;
+                    };
+                    model.reader.readAsArrayBuffer(xhr.response);
+                    cb(model);
+                }
+            }, false);
+            xhr.send();
+        },
+        
         stopLoop: function() {
             if (this.isPlaying) {
                 this.attributes.source.stop();
