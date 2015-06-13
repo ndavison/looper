@@ -12,7 +12,7 @@ define(['backbone', 'models/audiofile'], function(Backbone, AudioFile) {
         model: AudioFile,
         
         context: null,
-        
+                
         stopAll: function() {
             this.invoke('stopLoop');
         },
@@ -40,6 +40,7 @@ define(['backbone', 'models/audiofile'], function(Backbone, AudioFile) {
         },
         
         initialize: function() {
+            this.app.dispatcher.on('loop-added', this.add, this);
             this.app.dispatcher.on('play-loop', this.stopAll, this);
             this.app.dispatcher.on('play-loop', this.playLoop, this);
             this.app.dispatcher.on('save-loops', this.saveLoops, this);

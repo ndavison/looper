@@ -11,6 +11,7 @@ define(['backbone'], function(Backbone) {
         
         defaults: {
             loopId: '',
+            name: '',
             fileType: '',
             fileExtension: '',
             volume: 1,

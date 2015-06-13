@@ -11,8 +11,6 @@ define(['backbone', 'jquery', 'models/audiofiles', 'models/audiofile'], function
         
         el: '#view-createform',
         
-        audioFiles: null,
-        
         events: {
             'click button#create-loop': 'createLoop',
             'click button#demo-loop': 'demoLoop'
@@ -22,30 +20,26 @@ define(['backbone', 'jquery', 'models/audiofiles', 'models/audiofile'], function
             ev.preventDefault();
             var view = this;
             var file = this.$el.find('input[name="looper-file"]');
-            var audioFile = new AudioFile({context: view.audioFiles.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
+            var audioFile = new AudioFile({name: view.$el.find('input[name=looper-name]').val(), context: view.app.views.loops.model.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
             audioFile.readFile(file[0].files[0], function(model) {
                 if (!model.get('fileType').match(/^(audio\/(mpeg|wav|)|video\/ogg)/)) {
                     view.app.views.alerts.createAlert('The file must be a WAV, MP3 or OGG audio file.', 'danger');
                     return;
                 }
-                view.audioFiles.add(audioFile);
-                view.app.dispatcher.trigger('loop-added', {name: view.$el.find('input[name=looper-name]').val(), loopId: audioFile.get('loopId')});
+                view.app.dispatcher.trigger('loop-added', model);
             });
         },
         
         demoLoop: function(ev) {
             ev.preventDefault();
             var view = this;
-            var audioFile = new AudioFile({context: view.audioFiles.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
+            var audioFile = new AudioFile({name: 'Demo Loop', context: view.app.views.loops.model.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
             audioFile.readFromURL("/audioclip-1433848478.wav", function(model) {
-                view.audioFiles.add(audioFile);
-                view.app.dispatcher.trigger('loop-added', {name: 'Demo Loop', loopId: audioFile.get('loopId')});
+                view.app.dispatcher.trigger('loop-added', model);
             });
         },
         
-        initialize: function() {
-            this.audioFiles = new AudioFiles();
-        },
+        initialize: function() {},
         
         render: function() {}
         
