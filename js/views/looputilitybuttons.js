@@ -26,7 +26,7 @@ define(['backbone'], function(Backbone) {
                 
         saveLoops: function(ev) {
             ev.preventDefault();
-            this.app.dispatcher.trigger('saving-loops');
+            this.app.dispatcher.trigger('save-loops');
         },
         
         initialize: function() {
