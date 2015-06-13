@@ -9,25 +9,34 @@ define(['backbone'], function(Backbone) {
     
     var Model = Backbone.Model.extend({
         
-        reader: new FileReader(),
-        
-        initialize: function() {
-            this.attributes.loopId = Math.random().toString(36).replace(/[^a-z]+/g, '');
+        defaults: {
+            loopId: '',
+            fileType: '',
+            fileExtension: '',
+            volume: 1,
+            pitch: 1,
+            audioData: null
         },
         
+        reader: new FileReader(),
+                
         isPlaying: false,
         
         readFile: function(file, cb) {
             var model = this;
-            model.attributes.file = file;
             cb = cb || function() {};
+            model.set('fileType', file.type);
+            var fileMatches = file.name.match(/\.(.*)$/);
+            if (fileMatches[1]) {
+                model.set('fileExtension', fileMatches[1]);
+            }
             model.reader.readAsArrayBuffer(file);
             model.reader.onload = function(ev) {
-                model.attributes.data = ev.target.result;
+                model.set('audioData', ev.target.result);
                 cb(model);
             };
         },
-        
+                
         readFromURL: function(url, cb) {
             var model = this;
             var xhr = new XMLHttpRequest();
@@ -36,7 +45,7 @@ define(['backbone'], function(Backbone) {
             xhr.addEventListener("load", function () {
                 if (xhr.status === 200) {
                     model.reader.onload = function (ev) {
-                        model.attributes.data = ev.target.result;
+                        model.set('audioData', ev.target.result);
                     };
                     model.reader.readAsArrayBuffer(xhr.response);
                     cb(model);
@@ -47,7 +56,8 @@ define(['backbone'], function(Backbone) {
         
         stopLoop: function() {
             if (this.isPlaying) {
-                this.attributes.source.stop();
+                var source = this.get('source');
+                source.stop();
                 this.isPlaying = false;
             }
         },
@@ -55,36 +65,44 @@ define(['backbone'], function(Backbone) {
         playLoop: function() {
             var model = this;
             model.stopLoop();
-            var data = model.attributes.data.slice(0);
+            var data = model.get('audioData').slice(0);
             if (data instanceof ArrayBuffer) {
-                model.attributes.context.decodeAudioData(data, function(buffer) {
-                    model.attributes.buffer = buffer;
-                    model.attributes.source = model.attributes.context.createBufferSource();
-                    model.attributes.source.buffer = buffer;
-                    model.attributes.gain = model.attributes.context.createGain();
-                    model.attributes.source.connect(model.attributes.gain);
-                    model.attributes.gain.connect(model.attributes.context.destination);
-                    model.attributes.source.start(0);
-                    model.attributes.source.loop = true;
+                var context = model.get('context');
+                context.decodeAudioData(data, function(buffer) {
+                    var source = context.createBufferSource();
+                    model.set('source', source);
+                    source.buffer = buffer;
+                    var gain = context.createGain();
+                    model.set('gain', gain);
+                    source.connect(gain);
+                    gain.connect(context.destination);
+                    source.start(0);
+                    source.loop = true;
                     model.isPlaying = true;
-                    model.volume(model.attributes.volume);
-                    model.pitch(model.attributes.pitch);
+                    model.setVolume(model.get('volume'));
+                    model.setPitch(model.get('pitch'));
                 });
             }
         },
         
-        volume: function(level) {
-            this.attributes.volume = level;
+        setVolume: function(level) {
+            this.set('volume', level);
             if (this.isPlaying && level) {
-                this.attributes.gain.gain.value = level;
+                var gain = this.get('gain');
+                gain.gain.value = level;
             }
         },
         
-        pitch: function(level) {
-            this.attributes.pitch = level;
+        setPitch: function(level) {
+            this.set('pitch', level);
             if (this.isPlaying && level) {
-                this.attributes.source.playbackRate.value = level;
+                var source = this.get('source');
+                source.playbackRate.value = level;
             }
+        },
+        
+        initialize: function() {
+            this.set('loopId', Math.random().toString(36).replace(/[^a-z]+/g, ''));
         }
         
     });
