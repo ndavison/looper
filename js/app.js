@@ -30,7 +30,7 @@ define(['extensions', 'backbone', 'underscore', 'models/dropbox', 'views/alerts'
             /**
              * The necessary models.
              */
-            app.models.dropBox = new Dropbox({key: 'zr16qymzqg21hzf', receiverURL: 'https://'+window.location.hostname+'/looper/dropbox-receiver.html'});
+            app.models.dropBox = new Dropbox({key: 'zr16qymzqg21hzf', receiverURL: 'https://' + window.location.hostname + '/looper/dropbox-receiver.html'});
             
             /**
              * The necessary views.
