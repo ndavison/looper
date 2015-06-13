@@ -15,9 +15,9 @@ define(['backbone'], function(Backbone) {
             'click button': 'playLoop'
         },
         
-        addLoopButton: function(name, loopId) {
+        addLoopButton: function(data) {
             var view = this;
-            view.getTemplate('/looper/views/playloop.html', {name: name, loopId: loopId}, function(res) {
+            view.getTemplate('/looper/views/playloop.html', data, function(res) {
                 view.show(res, view.$el, true);
             });
         },

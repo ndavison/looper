@@ -29,32 +29,18 @@ define(['backbone', 'jquery', 'models/audiofiles', 'models/audiofile'], function
                     return;
                 }
                 view.audioFiles.add(audioFile);
-                view.app.dispatcher.trigger('loop-added', view.$el.find('input[name=looper-name]').val(), audioFile.get('loopId'));
+                view.app.dispatcher.trigger('loop-added', {name: view.$el.find('input[name=looper-name]').val(), loopId: audioFile.get('loopId')});
             });
         },
         
         demoLoop: function(ev) {
             ev.preventDefault();
             var view = this;
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "/audioclip-1433848478.wav", true);
-            xhr.responseType = "blob";
-         
             var audioFile = new AudioFile({context: view.audioFiles.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
-            
-            xhr.addEventListener("load", function () {
-                if (xhr.status === 200) {
-                    audioFile.reader.onload = function (ev) {
-                        audioFile.attributes.data = ev.target.result;
-                        view.audioFiles.add(audioFile);
-                        console.log(view.audioFiles);
-                        view.app.dispatcher.trigger('loop-added', 'Demo Loop', audioFile.get('loopId'));
-                    };
-                    audioFile.reader.readAsArrayBuffer(xhr.response);
-                }
-            }, false);
-            xhr.send();
-
+            audioFile.readFromURL("/audioclip-1433848478.wav", function(model) {
+                view.audioFiles.add(audioFile);
+                view.app.dispatcher.trigger('loop-added', {name: 'Demo Loop', loopId: audioFile.get('loopId')});
+            });
         },
         
         initialize: function() {
