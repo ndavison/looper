@@ -4,6 +4,8 @@
  *
  *
  */
+ 
+"use strict"
 
 define(['backbone', 'models/dropbox'], function(Backbone, Dropbox) {
     

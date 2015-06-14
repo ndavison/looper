@@ -5,6 +5,8 @@
  *
  */
 
+"use strict"
+ 
 define(['backbone', 'jquery', 'models/loop'], function(Backbone, $, Loop) {
     
     var View = Backbone.View.extend({

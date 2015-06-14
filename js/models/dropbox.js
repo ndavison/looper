@@ -5,6 +5,8 @@
  *
  */
 
+"use strict"
+ 
 define(['backbone', 'dropbox'], function(Backbone, Dropox) {
     
     var Model = Backbone.Model.extend({
