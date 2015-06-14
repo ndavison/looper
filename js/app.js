@@ -14,6 +14,9 @@ define(['extensions', 'backbone', 'underscore', 'models/dropbox', 'models/loops'
         this.views = {};
         this.models = {};
         this.dispatcher = _.clone(Backbone.Events);
+        this.dispatcher.on('all', function(eventName) {
+            console.log(eventName + ' triggered');
+        });
         
         /**
          * The app start.
