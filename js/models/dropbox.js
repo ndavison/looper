@@ -47,7 +47,8 @@ define(['backbone', 'dropbox'], function(Backbone, Dropox) {
                         console.log(error);
                         return;
                     }
-                    model.app.dispatcher.trigger('file-saved', {stat: fileStat, loop: loop}); 
+                    model.app.dispatcher.trigger('file-saved', {stat: fileStat, loop: loop});
+                    model.app.dispatcher.trigger('add-status-message', {message: loop.get('name') + ' saved to Dropbox.', timeout: true});
                     model.getShareURL(path, loop);
                 });
             }

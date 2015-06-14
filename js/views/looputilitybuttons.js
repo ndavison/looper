@@ -27,6 +27,7 @@ define(['backbone'], function(Backbone) {
         saveLoops: function(ev) {
             ev.preventDefault();
             this.app.dispatcher.trigger('save-loops');
+            this.app.dispatcher.trigger('add-status-message', {message: 'Saving audio files to Dropbox...'});
         },
         
         initialize: function() {
