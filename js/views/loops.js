@@ -14,7 +14,8 @@ define(['backbone'], function(Backbone) {
         el: '#view-loops',
         
         events: {
-            'click button': 'playLoop'
+            'click button': 'playLoop',
+            'touchstart button': 'playLoop'
         },
         
         addLoopButton: function(loop) {
@@ -27,7 +28,9 @@ define(['backbone'], function(Backbone) {
         playLoop: function(ev) {
             ev.preventDefault();
             var target = ev.currentTarget;
-            this.app.dispatcher.trigger('play-loop', $(target).attr('data-loopid'));
+            var loopId = $(target).attr('data-loopid');
+            this.model.playLoop(loopId);
+            this.app.dispatcher.trigger('play-loop', loopId);
         },
                 
         initialize: function() {
