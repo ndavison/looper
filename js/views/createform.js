@@ -19,6 +19,19 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
             'click button#dropbox-loop': 'getFromDropbox',
         },
         
+        addLoadFromDropboxButton: function() {
+            var view = this;
+            if (view.$el.find('button#dropbox-loop').length == 0) {
+                view.getTemplate('/looper/views/loadfromdropbox.html', {}, function(res) {
+                    view.show(res, view.$el.find('div#create-buttons'), true);
+                });
+            }
+        },
+        
+        removeLoadFromDropboxButton: function() {
+            this.$el.find('button#dropbox-loop').remove();
+        },
+        
         createLoop: function(ev) {
             ev.preventDefault();
             var view = this;
@@ -58,7 +71,10 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
             });
         },
         
-        initialize: function() {},
+        initialize: function() {
+            this.app.dispatcher.on('signed-in', this.addLoadFromDropboxButton, this);
+            this.app.dispatcher.on('signed-out', this.removeLoadFromDropboxButton, this);
+        },
         
         render: function() {}
         
