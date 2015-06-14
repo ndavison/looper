@@ -50,6 +50,7 @@ define(['backbone', 'models/loop'], function(Backbone, Loop) {
             this.app.dispatcher.on('save-loops', this.saveLoops, this);
             this.app.dispatcher.on('change-volume', this.changeVolumes, this);
             this.app.dispatcher.on('change-pitch', this.changePitches, this);
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
             this.context = new AudioContext();
         }
         
