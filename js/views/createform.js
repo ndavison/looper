@@ -15,8 +15,7 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
         
         events: {
             'click button#create-loop': 'createLoop',
-            'click button#demo-loop': 'demoLoop',
-            'click button#dropbox-loop': 'getFromDropbox',
+            'click button#dropbox-loop': 'getFromDropbox'
         },
         
         addLoadFromDropboxButton: function() {
@@ -49,7 +48,7 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
         getFromDropbox: function(ev) {
             ev.preventDefault();
             var view = this;
-            Dropbox.appKey = '3oyl33j84sk1elk';
+            Dropbox.appKey = view.attributes.dropboxDropinKey;
             Dropbox.choose({multiselect: true, linkType: 'direct', extensions: ['audio'], success: function(files) {
                 if (files.length > 0) {
                     for (var i = 0; i < files.length; i++) {
@@ -60,15 +59,6 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
                     }
                 }
             }});
-        },
-        
-        demoLoop: function(ev) {
-            ev.preventDefault();
-            var view = this;
-            var loop = new Loop({name: 'Demo Loop', context: view.app.views.loops.model.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
-            loop.readFromURL("/audioclip-1433848478.wav", function(model) {
-                view.app.dispatcher.trigger('loop-added', model);
-            });
         },
         
         initialize: function() {
