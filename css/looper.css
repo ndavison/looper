@@ -25,3 +25,6 @@ p#signin-msg {
 .navbar {
     border-radius: 0;
 }
+button {
+    cursor: pointer;
+}
