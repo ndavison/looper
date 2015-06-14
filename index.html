@@ -20,15 +20,17 @@
     </nav>
     <div class="container">
         <form id="view-createform">
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <input type="text" class="form-control" name="looper-name" placeholder="Loop name">
             </div>
             <div class="col-sm-4">
                 <input type="file" class="form-control" name="looper-file">
             </div>
-            <div class="col-sm-4">
-                <button id="create-loop" class="btn btn-primary">Create</button>
-                <button id="dropbox-loop" class="btn btn-default">Dropbox</button>
+            <div class="col-sm-5">
+                <button id="create-loop" class="btn btn-primary">Create</button> - or -
+                <button id="dropbox-loop" class="btn btn-info">
+                    <img src="images/dropbox-icon.png" alt="Dropbox logo"> Load from Dropbox
+                </button>
             </div>
         </form>
         <div id="view-controls" class="col-sm-12"></div>
