@@ -14,10 +14,14 @@ requirejs.config({
         bootstrap: '../bower_components/bootstrap/dist/js/bootstrap.min',
         backbone: '../bower_components/backbone/backbone-min',
         underscore: '../bower_components/underscore/underscore-min',
-        dropbox: '../bower_components/dropbox/lib/dropbox.min'
+        dropbox: '../bower_components/dropbox/lib/dropbox.min',
+        dropboxdropins: 'https://www.dropbox.com/static/api/2/dropins'
     },
     shim: {
         'dropbox': {
+            exports: 'Dropbox'
+        },
+        'dropboxdropins': {
             exports: 'Dropbox'
         }
     },

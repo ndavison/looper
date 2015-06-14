@@ -7,7 +7,7 @@
 
 "use strict"
  
-define(['backbone', 'jquery', 'models/loop'], function(Backbone, $, Loop) {
+define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbone, $, Dropbox, Loop) {
     
     var View = Backbone.View.extend({
         
@@ -15,7 +15,8 @@ define(['backbone', 'jquery', 'models/loop'], function(Backbone, $, Loop) {
         
         events: {
             'click button#create-loop': 'createLoop',
-            'click button#demo-loop': 'demoLoop'
+            'click button#demo-loop': 'demoLoop',
+            'click button#dropbox-loop': 'getFromDropbox',
         },
         
         createLoop: function(ev) {
@@ -30,6 +31,22 @@ define(['backbone', 'jquery', 'models/loop'], function(Backbone, $, Loop) {
                 }
                 view.app.dispatcher.trigger('loop-added', model);
             });
+        },
+        
+        getFromDropbox: function(ev) {
+            ev.preventDefault();
+            var view = this;
+            Dropbox.appKey = '3oyl33j84sk1elk';
+            Dropbox.choose({multiselect: true, linkType: 'direct', extensions: ['audio'], success: function(files) {
+                if (files.length > 0) {
+                    for (var i = 0; i < files.length; i++) {
+                        var loop = new Loop({name: files[i].name, dropboxURL: files[i].link, context: view.app.views.loops.model.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
+                        loop.readFromURL(files[i].link, function(model) {
+                            view.app.dispatcher.trigger('loop-added', model);
+                        });
+                    }
+                }
+            }});
         },
         
         demoLoop: function(ev) {

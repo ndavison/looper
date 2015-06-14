@@ -7,7 +7,7 @@
 
 "use strict"
  
-define(['backbone', 'dropbox'], function(Backbone, Dropox) {
+define(['backbone', 'dropbox'], function(Backbone, Dropbox) {
     
     var Model = Backbone.Model.extend({
         
@@ -43,16 +43,21 @@ define(['backbone', 'dropbox'], function(Backbone, Dropox) {
             var model = this;
             var path = model.get('dirName') + '/' + loop.get('loopId') + '.' + loop.get('fileExtension');
             var data = loop.get('audioData');
+            var dropboxURL = loop.get('dropboxURL');
             if (data) {
-                model.client.writeFile(path, data, {}, function(error, fileStat) {
-                    if (error) {
-                        console.log(error);
-                        return;
-                    }
-                    model.app.dispatcher.trigger('file-saved', {stat: fileStat, loop: loop});
-                    model.app.dispatcher.trigger('add-status-message', {message: loop.get('name') + ' saved to Dropbox.', timeout: true});
-                    model.getShareURL(path, loop);
-                });
+                if (dropboxURL) {
+                    model.app.dispatcher.trigger('add-status-message', {message: loop.get('name') + ' was already found in your Dropbox.', timeout: true});
+                } else {
+                    model.client.writeFile(path, data, {}, function(error, fileStat) {
+                        if (error) {
+                            console.log(error);
+                            return;
+                        }
+                        model.app.dispatcher.trigger('file-saved', {stat: fileStat, loop: loop});
+                        model.app.dispatcher.trigger('add-status-message', {message: loop.get('name') + ' saved to Dropbox.', timeout: true});
+                        model.getShareURL(path, loop);
+                    });
+                }
             }
         },
         
@@ -64,7 +69,7 @@ define(['backbone', 'dropbox'], function(Backbone, Dropox) {
                     return;
                 }
                 if (loop) {
-                    loop.set('dropBoxURL', shareURL.url);
+                    loop.set('dropboxURL', shareURL.url);
                 }
             });
         },

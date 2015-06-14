@@ -14,7 +14,7 @@ define(['backbone'], function(Backbone) {
         defaults: {
             loopId: '',
             name: '',
-            dropBoxURL: '',
+            dropboxURL: '',
             fileType: '',
             fileExtension: '',
             volume: 1,
