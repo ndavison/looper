@@ -29,7 +29,6 @@ define(['backbone'], function(Backbone) {
             ev.preventDefault();
             var target = ev.currentTarget;
             var loopId = $(target).attr('data-loopid');
-            this.model.playLoop(loopId);
             this.app.dispatcher.trigger('play-loop', loopId);
         },
                 
