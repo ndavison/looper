@@ -42,7 +42,7 @@ define(['backbone', 'dropbox'], function(Backbone, Dropbox) {
         saveFileToDropbox: function(loop) {
             var model = this;
             var path = model.get('dirName') + '/' + loop.get('loopId') + '.' + loop.get('fileExtension');
-            var data = loop.get('audioData');
+            var data = loop.getAudioProperties().audioData;
             var dropboxURL = loop.get('dropboxURL');
             if (data) {
                 if (dropboxURL) {
@@ -55,22 +55,23 @@ define(['backbone', 'dropbox'], function(Backbone, Dropbox) {
                         }
                         model.app.dispatcher.trigger('file-saved', {stat: fileStat, loop: loop});
                         model.app.dispatcher.trigger('add-status-message', {message: loop.get('name') + ' saved to Dropbox.', timeout: true});
-                        model.getShareURL(path, loop);
+                        model.getShareURL(path, function(url) {
+                            model.app.dispatcher.trigger('dropbox-url-created', {shareURL: url, loop: loop});
+                        });
                     });
                 }
             }
         },
         
-        getShareURL: function(path, loop) {
+        getShareURL: function(path, cb) {
             var model = this;
+            cb = cb || function () {};
             model.client.makeUrl(path, {downloadHack: true}, function(error, shareURL) {
                 if (error) {
                     console.log(error);
                     return;
                 }
-                if (loop) {
-                    loop.set('dropboxURL', shareURL.url);
-                }
+                cb(shareURL.url);
             });
         },
         
@@ -98,6 +99,7 @@ define(['backbone', 'dropbox'], function(Backbone, Dropbox) {
                     model.app.dispatcher.trigger('signed-in', model);
                     model.getAccountInfo(function(info) {
                         model.set('owner', info.uid);
+                        model.app.dispatcher.trigger('signed-in-user-info', info);
                     });
                 } else {
                     model.app.dispatcher.trigger('signed-out', model);

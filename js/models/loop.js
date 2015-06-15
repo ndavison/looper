@@ -13,13 +13,31 @@ define(['backbone'], function(Backbone) {
         
         defaults: {
             loopId: '',
+            looperId: '',
+            userId: '',
             name: '',
             dropboxURL: '',
             fileType: '',
             fileExtension: '',
-            volume: 1,
-            pitch: 1,
-            audioData: null
+        },
+        
+        setAudioProperties: function(params) {
+            if (params.context) {
+                this.context = params.context;
+            }
+            if (params.volume) {
+                this.volume = params.volume;
+            }
+            if (params.pitch) {
+                this.pitch = params.pitch;
+            }
+            if (params.audioData) {
+                this.audioData = params.audioData;
+            }
+        },
+        
+        getAudioProperties: function() {
+            return {context: this.context, volume: this.volume, pitch: this.pitch, audioData: this.audioData}
         },
         
         reader: new FileReader(),
@@ -36,7 +54,7 @@ define(['backbone'], function(Backbone) {
             }
             model.reader.readAsArrayBuffer(file);
             model.reader.onload = function(ev) {
-                model.set('audioData', ev.target.result);
+                model.audioData = ev.target.result;
                 cb(model);
             };
         },
@@ -49,7 +67,7 @@ define(['backbone'], function(Backbone) {
             xhr.addEventListener("load", function () {
                 if (xhr.status === 200) {
                     model.reader.onload = function (ev) {
-                        model.set('audioData', ev.target.result);
+                        model.audioData = ev.target.result;
                     };
                     model.reader.readAsArrayBuffer(xhr.response);
                     cb(model);
@@ -60,7 +78,7 @@ define(['backbone'], function(Backbone) {
         
         stopLoop: function() {
             if (this.isPlaying) {
-                var source = this.get('source');
+                var source = this.source;
                 source.stop();
                 this.isPlaying = false;
             }
@@ -69,44 +87,49 @@ define(['backbone'], function(Backbone) {
         playLoop: function() {
             var model = this;
             model.stopLoop();
-            var data = model.get('audioData').slice(0);
+            var data = model.audioData.slice(0);
             if (data instanceof ArrayBuffer) {
-                var context = model.get('context');
+                var context = model.context;
                 context.decodeAudioData(data, function(buffer) {
                     var source = context.createBufferSource();
-                    model.set('source', source);
+                    model.source = source;
                     source.buffer = buffer;
                     var gain = context.createGain();
-                    model.set('gain', gain);
+                    model.gain = gain;
                     source.connect(gain);
                     gain.connect(context.destination);
                     source.start(0);
                     source.loop = true;
                     model.isPlaying = true;
-                    model.setVolume(model.get('volume'));
-                    model.setPitch(model.get('pitch'));
+                    model.setVolume(model.volume);
+                    model.setPitch(model.pitch);
                 });
             }
         },
         
         setVolume: function(level) {
-            this.set('volume', level);
+            this.volume = level;
             if (this.isPlaying && level) {
-                var gain = this.get('gain');
+                var gain = this.gain;
                 gain.gain.value = level;
             }
         },
         
         setPitch: function(level) {
-            this.set('pitch', level);
+            this.pitch = level;
             if (this.isPlaying && level) {
-                var source = this.get('source');
+                var source = this.source;
                 source.playbackRate.value = level;
             }
         },
         
+        saveMetaData: function() {
+            this.save(this.attributes);
+        },
+        
         initialize: function() {
             this.set('loopId', Math.random().toString(36).replace(/[^a-z]+/g, ''));
+            this.on('change:dropboxURL', this.saveMetaData, this);
         }
         
     });
