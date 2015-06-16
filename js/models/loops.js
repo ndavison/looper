@@ -40,10 +40,10 @@ define(['backbone', 'models/loop'], function(Backbone, Loop) {
             loop.set('userId', this.userId);
         },
                         
-        stopAll: function(loopId) {
+        stopAll: function(loopPlayed) {
             var model = this;
             model.forEach(function(loop) {
-                if (loopId != loop.get('loopId')) {
+                if (loopPlayed.get('loopId') != loop.get('loopId')) {
                     loop.stopLoop();
                 }
             });

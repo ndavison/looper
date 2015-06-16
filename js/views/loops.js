@@ -30,7 +30,6 @@ define(['backbone'], function(Backbone) {
             var loopId = $(target).attr('data-loopid');
             var loop = this.model.findWhere({loopId: loopId});
             if (loop) {
-                this.app.dispatcher.trigger('play-loop', loopId);
                 loop.playLoop();
             }
         },

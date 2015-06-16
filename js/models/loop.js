@@ -99,6 +99,7 @@ define(['backbone'], function(Backbone) {
                     source.connect(gain);
                     gain.connect(context.destination);
                     source.start(0);
+                    model.app.dispatcher.trigger('play-loop', model);
                     source.loop = true;
                     model.isPlaying = true;
                     model.setVolume(model.volume);
