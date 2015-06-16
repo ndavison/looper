@@ -40,8 +40,13 @@ define(['backbone', 'models/loop'], function(Backbone, Loop) {
             loop.set('userId', this.userId);
         },
                         
-        stopAll: function() {
-            this.invoke('stopLoop');
+        stopAll: function(loopId) {
+            var model = this;
+            model.forEach(function(loop) {
+                if (loopId != loop.get('loopId')) {
+                    loop.stopLoop();
+                }
+            });
         },
         
         playLoop: function(loopId) {
@@ -73,7 +78,6 @@ define(['backbone', 'models/loop'], function(Backbone, Loop) {
             this.app.dispatcher.on('loop-added', this.add, this);
             this.app.dispatcher.on('loop-added', this.setLoopAttributes, this);
             this.app.dispatcher.on('play-loop', this.stopAll, this);
-            this.app.dispatcher.on('play-loop', this.playLoop, this);
             this.app.dispatcher.on('save-loops', this.saveLoops, this);
             this.app.dispatcher.on('change-volume', this.changeVolumes, this);
             this.app.dispatcher.on('change-pitch', this.changePitches, this);
