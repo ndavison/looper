@@ -11,17 +11,21 @@ define(['backbone'], function(Backbone) {
    
     var View = Backbone.View.extend({
         
-        el: '#view-loop-utility-buttons',
+        el: '#view-looper-save',
         
         events: {
             'click button#save-loops': 'saveLoops'
         },
         
-        addSaveLoopsButton: function() {
+        addSaveForm: function() {
             var view = this;
-            if (view.$el.find('button#save-loops').length == 0) {
+            if (view.$el.find('form#view-saveform').length == 0) {
                 view.getTemplate('/looper/views/saveloops.html', {}, function(res) {
-                    view.show(res, view.$el, true);
+                    view.show(res, view.$el, true, function(form) {
+                        form.find('input[name=looper-name]').on('input', function() {
+                            view.app.dispatcher.trigger('change-looper-name', this.value);                            
+                        });
+                    });
                 });
             }
         },
@@ -33,7 +37,7 @@ define(['backbone'], function(Backbone) {
         },
         
         initialize: function() {
-            this.app.dispatcher.on('loop-added', this.addSaveLoopsButton, this);
+            this.app.dispatcher.on('loop-added', this.addSaveForm, this);
         },
         
         render: function() {}
