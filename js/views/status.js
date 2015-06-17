@@ -17,14 +17,18 @@ define(['backbone'], function(Backbone) {
         
         addStatusMessage: function(options) {
             var view = this;
+            var timeout = typeof options.timeout != 'undefined' ? options.timeout : true;
             view.getTemplate('/looper/views/statusmessage.html', {message: options.message}, function(res) {
-                view.show(res, view.$el);
+                view.show(res, view.$el, true, function(messageEl) {
+                    console.log(messageEl);
+                    if (timeout) {
+                        setTimeout(function() {
+                            messageEl.hide().remove();
+                            console.log({el: messageEl, t: 't'});
+                        }, 3000);
+                    }
+                });
             });
-            if (options.timeout) {
-                setTimeout(function() {
-                    view.clearStatusMessage();
-                }, 3000);
-            }
         },
         
         clearStatusMessage: function() {
