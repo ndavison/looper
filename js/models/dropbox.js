@@ -46,7 +46,7 @@ define(['backbone', 'dropbox'], function(Backbone, Dropbox) {
             var dropboxURL = loop.get('dropboxURL');
             if (data) {
                 if (dropboxURL) {
-                    model.app.dispatcher.trigger('add-status-message', {message: loop.get('name') + ' was already found in your Dropbox.', timeout: true});
+                    model.app.dispatcher.trigger('add-status-message', {message: loop.get('name') + ' was already found in your Dropbox.'});
                 } else {
                     model.client.writeFile(path, data, {}, function(error, fileStat) {
                         if (error) {
@@ -54,7 +54,7 @@ define(['backbone', 'dropbox'], function(Backbone, Dropbox) {
                             return;
                         }
                         model.app.dispatcher.trigger('file-saved', {stat: fileStat, loop: loop});
-                        model.app.dispatcher.trigger('add-status-message', {message: loop.get('name') + ' saved to Dropbox.', timeout: true});
+                        model.app.dispatcher.trigger('add-status-message', {message: loop.get('name') + ' saved to Dropbox.'});
                         model.getShareURL(path, function(url) {
                             model.app.dispatcher.trigger('dropbox-url-created', {shareURL: url, loop: loop});
                         });
