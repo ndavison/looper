@@ -58,12 +58,13 @@ define(['backbone', 'jquery'], function(Backbone, $) {
                 append = typeof append != 'undefined' ? append : false;
                 cb = cb || function () {};
                 if (append) {
-                    $(contents).hide().appendTo(el).fadeIn(300, function() {
-                        cb($(contents));
+                    var newEl = $(contents);
+                    newEl.hide().appendTo(el).fadeIn(300, function() {
+                        cb(newEl);
                     });
                 } else {
                     el.hide().html(contents).fadeIn(300, function() {
-                        cb($(contents));
+                        cb(el);
                     });
                 }
             };
