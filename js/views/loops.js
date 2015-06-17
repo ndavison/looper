@@ -14,7 +14,8 @@ define(['backbone'], function(Backbone) {
         el: '#view-loops',
         
         events: {
-            'click button': 'playLoop'
+            'click button': 'playLoop',
+            'touchstart button': 'playLoop'
         },
         
         addLoopButton: function(loop) {
