@@ -35,7 +35,7 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
             ev.preventDefault();
             var view = this;
             var file = this.$el.find('input[name="looper-file"]');
-            var loop = new Loop({name: view.$el.find('input[name=looper-name]').val()});
+            var loop = new Loop({name: file[0].files[0].name});
             loop.setAudioProperties({context: view.app.views.loops.model.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
             loop.readFile(file[0].files[0], function(model) {
                 if (!model.get('fileType').match(/^(audio\/(mpeg|wav|)|video\/ogg)/)) {
