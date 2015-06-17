@@ -14,6 +14,7 @@ define(['backbone'], function(Backbone) {
         defaults: {
             loopId: '',
             looperId: '',
+            looperName: '',
             userId: '',
             name: '',
             dropboxURL: '',
@@ -41,8 +42,6 @@ define(['backbone'], function(Backbone) {
         },
         
         reader: new FileReader(),
-                
-        isPlaying: false,
         
         readFile: function(file, cb) {
             var model = this;
@@ -77,16 +76,13 @@ define(['backbone'], function(Backbone) {
         },
         
         stopLoop: function() {
-            if (this.isPlaying) {
-                var source = this.source;
-                source.stop();
-                this.isPlaying = false;
+            if (this.source) {
+                this.source.stop();
             }
         },
         
         playLoop: function() {
             var model = this;
-            model.stopLoop();
             var data = model.audioData.slice(0);
             if (data instanceof ArrayBuffer) {
                 var context = model.context;
@@ -110,17 +106,15 @@ define(['backbone'], function(Backbone) {
         
         setVolume: function(level) {
             this.volume = level;
-            if (this.isPlaying && level) {
-                var gain = this.gain;
-                gain.gain.value = level;
+            if (level && this.gain && this.gain.gain) {
+                this.gain.gain.value = level;
             }
         },
         
         setPitch: function(level) {
             this.pitch = level;
-            if (this.isPlaying && level) {
-                var source = this.source;
-                source.playbackRate.value = level;
+            if (level && this.source && this.source.playbackRate) {
+                this.source.playbackRate.value = level;
             }
         },
         
