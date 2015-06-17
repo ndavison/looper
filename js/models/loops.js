@@ -35,6 +35,12 @@ define(['backbone', 'models/loop'], function(Backbone, Loop) {
             }
         },
         
+        setLooperName: function(name) {
+            this.forEach(function(loop) {
+                loop.set('looperName', name);
+            });
+        },
+        
         setLoopAttributes: function(loop) {
             loop.set('looperId', this.looperId);
             loop.set('userId', this.userId);
@@ -83,6 +89,7 @@ define(['backbone', 'models/loop'], function(Backbone, Loop) {
             this.app.dispatcher.on('change-pitch', this.changePitches, this);
             this.app.dispatcher.on('signed-in-user-info', this.setUserId, this);
             this.app.dispatcher.on('dropbox-url-created', this.setShareURL, this);
+            this.app.dispatcher.on('change-looper-name', this.setLooperName, this);
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
             this.context = new AudioContext();
         }
