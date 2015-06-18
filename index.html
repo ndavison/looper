@@ -11,27 +11,39 @@
     <nav id="view-navbar" class="navbar navbar-inverse">
       <div class="container-fluid">
         <div class="container">
-            <div class="col-xs-9 col-sm-6 navbar-header">
-              <a href="/looper"><img src="images/looper-logo-sm.png" alt="Looper logo"></a>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 navbar-header">
+                  <a href="/looper"><img src="images/looper-logo-sm.png" alt="Looper logo"></a>
+                </div>
+                <div class="col-xs-3 col-sm-6" id="navbar-buttons"></div>
             </div>
-            <div class="col-xs-3 col-sm-6" id="navbar-buttons"></div>
         </div>
       </div>
     </nav>
     <div class="container">
-        <form id="view-createform">
-            <div class="col-sm-6">
-                <input type="file" class="form-control" name="looper-file">
-            </div>
-            <div class="col-sm-6" id="create-buttons">
-                <button id="create-loop" class="btn btn-primary">Create</button>
-            </div>
-        </form>
-        <div id="view-controls" class="col-sm-12"></div>
-        <div id="view-alerts" class="col-sm-12"></div>
-        <div id="view-loops" class="col-sm-12"></div>
-        <div id="view-looper-save" class="col-md-12"></div>
-        <div id="view-status" class="col-md-12"></div>
+        <div class="row">
+            <form id="view-createform">
+                <div class="col-xs-6 col-sm-8">
+                    <input type="file" class="form-control" name="looper-file" multiple>
+                </div>
+                <div class="col-xs-5 col-sm-4"></div>
+            </form>
+        </div>
+        <div class="row">
+            <div id="view-controls" class="col-sm-12"></div>
+        </div>
+        <div class="row">
+            <div id="view-alerts" class="col-sm-12"></div>
+        </div>
+        <div class="row">
+            <div id="view-loops" class="col-sm-12"></div>
+        </div>
+        <div class="row">
+            <div id="view-looper-save"></div>
+        </div>
+        <div class="row">
+            <div id="view-status" class="col-md-12"></div>
+        </div>
     </div>
     <script type="text/javascript" src="bower_components/requirejs/require.js" data-main="/looper/js/main.js"></script>
 </body>
