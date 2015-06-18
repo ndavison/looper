@@ -10,10 +10,6 @@ div.row {
     background-image: linear-gradient(to bottom, #422664 0px, #180e25 100%)
 }
 
-.navbar img {
-    padding-bottom: 10px;
-}
-
 div#view-loops button {
     margin: 0px 10px 10px 0px;
 }

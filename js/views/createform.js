@@ -39,18 +39,20 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
             var loop, file;
             for (var i = 0; i < fileEl[0].files.length; i++) {
                 file = fileEl[0].files.item(i);
+                if (!file.type.match(/^(audio\/(mpeg|wav|)|video\/ogg)/)) {
+                    view.app.views.alerts.createAlert('The file ' + file.name + ' was not an audio file! supported formats include WAV, MP3 and OGG.', 'danger');
+                    continue;
+                }
                 loop = new Loop({name: file.name});
                 loops.push(loop);
                 loop.setAudioProperties({context: view.app.views.loops.model.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
                 loop.readFile(file, function(loop) {
-                    if (!loop.get('fileType').match(/^(audio\/(mpeg|wav|)|video\/ogg)/)) {
-                        view.app.views.alerts.createAlert('The file must be a WAV, MP3 or OGG audio file.', 'danger');
-                        return;
-                    }
                     view.app.dispatcher.trigger('loop-loaded', loop);
                 });
             }
-            view.app.dispatcher.trigger('loops-added', loops);
+            if (loops.length > 0) {
+                view.app.dispatcher.trigger('loops-added', loops);
+            }
         },
         
         getFromDropbox: function(ev) {
@@ -69,7 +71,9 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
                             view.app.dispatcher.trigger('loop-loaded', loop);
                         });
                     }
-                    view.app.dispatcher.trigger('loops-added', loops);
+                    if (loops.length > 0) {
+                        view.app.dispatcher.trigger('loops-added', loops);
+                    }
                 }
             }});
         },
