@@ -2,8 +2,8 @@
     height: auto;
 }
 
-div.container div {
-    padding-top: 10px;
+div.row {
+    padding: 10px 0px 10px 0px;
 }
 
 .navbar-inverse {
