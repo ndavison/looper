@@ -36,6 +36,10 @@ define(['backbone'], function(Backbone) {
         
         initialize: function() {
             this.app.dispatcher.on('loops-added', this.render, this);
+            this.defaultValues = {
+                volume: 100,
+                pitch: 100
+            };
         },
         
         render: function() {
@@ -43,7 +47,7 @@ define(['backbone'], function(Backbone) {
             if (view.$el.find('input[name=loopers-volume]').length == 0 &&
                 view.$el.find('input[name=loopers-pitch]').length == 0
             ) {
-                view.getTemplate('/looper/views/controls.html', {}, function(res) {
+                view.getTemplate('/looper/views/controls.html', {volume: view.defaultValues.volume, pitch: view.defaultValues.pitch}, function(res) {
                     view.show(res);
                 });
             }
