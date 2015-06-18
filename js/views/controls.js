@@ -35,7 +35,7 @@ define(['backbone'], function(Backbone) {
         },
         
         initialize: function() {
-            this.app.dispatcher.on('loop-added', this.render, this);
+            this.app.dispatcher.on('loops-added', this.render, this);
         },
         
         render: function() {
