@@ -40,33 +40,32 @@ define(['backbone'], function(Backbone) {
         getAudioProperties: function() {
             return {context: this.context, volume: this.volume, pitch: this.pitch, audioData: this.audioData}
         },
-        
-        reader: new FileReader(),
-        
+                
         readFile: function(file, cb) {
             var model = this;
             cb = cb || function() {};
             model.set('fileType', file.type);
             var fileMatches = file.name.match(/\.(.*)$/);
-            if (fileMatches[1]) {
+            if (fileMatches && fileMatches[1]) {
                 model.set('fileExtension', fileMatches[1]);
             }
-            model.reader.readAsArrayBuffer(file);
             model.reader.onload = function(ev) {
-                model.audioData = ev.target.result;
+                model.setAudioProperties({audioData: ev.target.result});
                 cb(model);
             };
+            model.reader.readAsArrayBuffer(file);
         },
                 
         readFromURL: function(url, cb) {
             var model = this;
+            cb = cb || function() {};
             var xhr = new XMLHttpRequest();
             xhr.open("GET", url, true);
             xhr.responseType = "blob";
-            xhr.addEventListener("load", function () {
+            xhr.addEventListener('load', function () {
                 if (xhr.status === 200) {
                     model.reader.onload = function (ev) {
-                        model.audioData = ev.target.result;
+                        model.setAudioProperties({audioData: ev.target.result});
                     };
                     model.reader.readAsArrayBuffer(xhr.response);
                     cb(model);
@@ -125,6 +124,7 @@ define(['backbone'], function(Backbone) {
         initialize: function() {
             this.set('loopId', Math.random().toString(36).replace(/[^a-z]+/g, ''));
             this.on('change:dropboxURL', this.saveMetaData, this);
+            this.reader = new FileReader();
         }
         
     });

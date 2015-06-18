@@ -14,9 +14,7 @@ define(['backbone', 'models/loop'], function(Backbone, Loop) {
         url: '/looper/api/loops',
         
         model: Loop,
-        
-        context: null,
-                
+                        
         setUserId: function(info) {
             if (info.uid) {
                 this.userId = info.uid;
@@ -41,9 +39,13 @@ define(['backbone', 'models/loop'], function(Backbone, Loop) {
             });
         },
         
-        setLoopAttributes: function(loop) {
-            loop.set('looperId', this.looperId);
-            loop.set('userId', this.userId);
+        setLoopAttributes: function(loops) {
+            var loop;
+            for (var i = 0; i < loops.length; i++) {
+                loop = loops[i];
+                loop.set('looperId', this.looperId);
+                loop.set('userId', this.userId);
+            }
         },
                         
         stopAll: function(loopPlayed) {
@@ -81,8 +83,8 @@ define(['backbone', 'models/loop'], function(Backbone, Loop) {
              
         initialize: function() {
             this.looperId = Math.random().toString(36).replace(/[^a-z]+/g, '');
-            this.app.dispatcher.on('loop-added', this.add, this);
-            this.app.dispatcher.on('loop-added', this.setLoopAttributes, this);
+            this.app.dispatcher.on('loops-added', this.add, this);
+            this.app.dispatcher.on('loops-added', this.setLoopAttributes, this);
             this.app.dispatcher.on('play-loop', this.stopAll, this);
             this.app.dispatcher.on('save-loops', this.saveLoops, this);
             this.app.dispatcher.on('change-volume', this.changeVolumes, this);
