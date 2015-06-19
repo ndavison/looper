@@ -15,27 +15,18 @@ define(['backbone'], function(Backbone) {
         
         events: {},
         
-        addStatusMessage: function(options) {
+        addStatusMessage: function(message) {
             var view = this;
-            var timeout = typeof options.timeout != 'undefined' ? options.timeout : true;
-            view.getTemplate('/looper/views/statusmessage.html', {message: options.message}, function(res) {
+            view.getTemplate('/looper/views/statusmessage.html', {message: message}, function(res) {
                 view.show(res, view.$el, true, function(messageEl) {
-                    if (timeout) {
-                        setTimeout(function() {
-                            messageEl.hide().remove();
-                        }, 3000);
-                    }
+                    messageEl.delay(3000).fadeOut(300);
                 });
             });
         },
-        
-        clearStatusMessage: function() {
-            this.addStatusMessage({message: ''});
-        },
-        
+                
         initialize: function() {
-            this.app.dispatcher.on('add-status-message', this.addStatusMessage, this);
-            this.app.dispatcher.on('clear-status-message', this.clearStatusMessage, this);
+            this.app.dispatcher.on('status', this.addStatusMessage, this);
+            this.app.dispatcher.on('dropbox:status', this.addStatusMessage, this);
         },
         
         render: function() {}

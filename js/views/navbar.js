@@ -57,8 +57,8 @@ define(['backbone', 'models/dropbox'], function(Backbone, Dropbox) {
         },
                 
         initialize: function() {
-            this.app.dispatcher.on('signed-in', this.signedIn, this);;
-            this.app.dispatcher.on('signed-out', this.signedOut, this);
+            this.app.dispatcher.on('dropbox:signed-in', this.signedIn, this);;
+            this.app.dispatcher.on('dropbox:signed-out', this.signedOut, this);
         },
         
         render: function() {}

@@ -41,26 +41,28 @@ define(['backbone', 'dropbox'], function(Backbone, Dropbox) {
         
         saveFileToDropbox: function(loop) {
             var model = this;
-            var path = model.get('dirName') + '/' + loop.get('loopId') + '.' + loop.get('fileExtension');
-            var data = loop.getAudioProperties().audioData;
-            var dropboxURL = loop.get('dropboxURL');
-            if (data) {
-                if (dropboxURL) {
-                    model.app.dispatcher.trigger('add-status-message', {message: loop.get('name') + ' was already found in your Dropbox.'});
-                } else {
-                    model.client.writeFile(path, data, {}, function(error, fileStat) {
-                        if (error) {
-                            console.log(error);
-                            return;
-                        }
-                        model.app.dispatcher.trigger('file-saved', {stat: fileStat, loop: loop});
-                        model.app.dispatcher.trigger('add-status-message', {message: loop.get('name') + ' saved to Dropbox.'});
-                        model.getShareURL(path, function(url) {
-                            model.app.dispatcher.trigger('dropbox-url-created', {shareURL: url, loop: loop});
+            model.prepare(function () {
+                var path = model.get('dirName') + '/' + loop.get('loopId') + '.' + loop.get('fileExtension');
+                var data = loop.getAudioProperties().audioData;
+                var dropboxURL = loop.get('dropboxURL');
+                if (data) {
+                    if (dropboxURL) {
+                        model.trigger('status', loop.get('name') + ' was already found in your Dropbox.');
+                    } else {
+                        model.client.writeFile(path, data, {}, function(error, fileStat) {
+                            if (error) {
+                                console.log(error);
+                                return;
+                            }
+                            model.trigger('file-saved', {stat: fileStat, loop: loop});
+                            model.trigger('status', loop.get('name') + ' saved to Dropbox.');
+                            model.getShareURL(path, function(url) {
+                                model.trigger('shareurl-created', {shareURL: url, loop: loop});
+                            });
                         });
-                    });
+                    }
                 }
-            }
+            });
         },
         
         getShareURL: function(path, cb) {
@@ -96,13 +98,13 @@ define(['backbone', 'dropbox'], function(Backbone, Dropbox) {
                     return;
                 }
                 if (model.client.isAuthenticated()) {
-                    model.app.dispatcher.trigger('signed-in', model);
+                    model.trigger('signed-in', model);
                     model.getAccountInfo(function(info) {
                         model.set('owner', info.uid);
-                        model.app.dispatcher.trigger('signed-in-user-info', info);
+                        model.trigger('signed-in-user-info', info);
                     });
                 } else {
-                    model.app.dispatcher.trigger('signed-out', model);
+                    model.trigger('signed-out', model);
                 }
                 cb(model);
             });
@@ -116,15 +118,13 @@ define(['backbone', 'dropbox'], function(Backbone, Dropbox) {
                     console.log(error);
                     return;
                 }
-                model.app.dispatcher.trigger('signed-out', model);
+                model.trigger('signed-out', model);
                 cb(model);
             });
         },
         
         initialize: function() {
             var model = this;
-            model.app.dispatcher.on('dropbox-prepare', model.prepare, model);
-            model.app.dispatcher.on('save-loop', model.saveFileToDropbox, model);
             model.client = new Dropbox.Client({key: model.attributes.key});
             model.client.authDriver(new Dropbox.AuthDriver.Popup(
                 {receiverUrl: model.attributes.receiverURL})

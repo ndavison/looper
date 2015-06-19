@@ -81,8 +81,8 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
         },
         
         initialize: function() {
-            this.app.dispatcher.on('signed-in', this.addLoadFromDropboxButton, this);
-            this.app.dispatcher.on('signed-out', this.removeLoadFromDropboxButton, this);
+            this.app.dispatcher.on('dropbox:signed-in', this.addLoadFromDropboxButton, this);
+            this.app.dispatcher.on('dropbox:signed-out', this.removeLoadFromDropboxButton, this);
         },
         
         render: function() {}

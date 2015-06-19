@@ -7,7 +7,7 @@
 
 "use strict"
  
-define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'models/loops', 'views/alerts', 'views/navbar', 'views/createform', 'views/controls', 'views/loops', 'views/loopersave', 'views/status'], function(Config, Extensions, Backbone, _, Dropbox, Loops, AlertsView, NavBarView, CreateFormView, ControlsView, LoopsView, LooperSaveView, StatusView) {
+define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'models/loops', 'views/alerts', 'views/navbar', 'views/createform', 'views/controls', 'views/loops', 'views/status'], function(Config, Extensions, Backbone, _, Dropbox, Loops, AlertsView, NavBarView, CreateFormView, ControlsView, LoopsView, StatusView) {
     
     var App = function() {
         
@@ -36,6 +36,11 @@ define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'mod
              */
             app.models.dropBox = new Dropbox({key: app.config.dropboxAPIKey, receiverURL: app.config.oAuthReceiverURL});
             
+            // proxy all Dropbox model events to the app event dispatcher, as dropbox:{event}.
+            app.dispatcher.listenTo(app.models.dropBox, 'all', function(event, args) {
+                this.trigger('dropbox:' + event, args);
+            });
+            
             /**
              * The necessary views.
              */
@@ -44,7 +49,6 @@ define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'mod
             app.views.controls = new ControlsView();
             app.views.alerts = new AlertsView();
             app.views.loops = new LoopsView({model: new Loops()});
-            app.views.loopersave = new LooperSaveView();
             app.views.status = new StatusView();
             
             // authenticate to Dropbox without interaction, in case the user has cached credentials
