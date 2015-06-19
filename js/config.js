@@ -11,6 +11,8 @@ define(function() {
     
     var config = {
         
+        siteRoot: '/looper',
+        
         dropboxAPIKey: 'zr16qymzqg21hzf',
         
         dropboxDropinKey: '3oyl33j84sk1elk',
