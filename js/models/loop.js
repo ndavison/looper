@@ -76,7 +76,7 @@ define(['backbone'], function(Backbone) {
         
         stopLoop: function() {
             if (this.source) {
-                this.source.stop();
+                this.source.stop(0);
             }
         },
         
