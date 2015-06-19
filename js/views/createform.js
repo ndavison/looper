@@ -46,6 +46,7 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
                 loop = new Loop({name: file.name});
                 loops.push(loop);
                 loop.setAudioProperties({context: view.app.views.loops.model.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
+                view.app.dispatcher.trigger('loop-added', loop);
                 loop.readFile(file, function(loop) {
                     view.app.dispatcher.trigger('loop-loaded', loop);
                 });
@@ -67,6 +68,7 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
                         loop = new Loop({name: files[i].name, dropboxURL: files[i].link});
                         loops.push(loop);
                         loop.setAudioProperties({context: view.app.views.loops.model.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
+                        view.app.dispatcher.trigger('loop-added', loop);
                         loop.readFromURL(files[i].link, function(loop) {
                             view.app.dispatcher.trigger('loop-loaded', loop);
                         });

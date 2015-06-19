@@ -18,23 +18,24 @@ define(['backbone'], function(Backbone) {
             'touchstart button': 'playLoop'
         },
         
-        addLoopButtons: function(loops) {
+        addLoopButton: function(loop) {
             var view = this;
-            var loop;
-            for (var i = 0; i < loops.length; i++) {
-                loop = loops[i];
-                view.getTemplate('/looper/views/playloop.html', {loopId: loop.get('loopId'), name: loop.get('name'), enabled: loop.getAudioProperties().audioData ? true : false}, function(res) {
-                    view.show(res, view.$el, true);
-                });
-            }
+            view.getTemplate('/looper/views/playloop.html', {loopId: loop.get('loopId'), name: loop.get('name'), enabled: loop.getAudioProperties().audioData ? true : false}, function(res) {
+                view.show(res, view.$el, true);
+            });
         },
         
         enableLoopButton: function(loop) {
             var view = this;
             var loopId = loop.get('loopId');
-            if (loopId && view.$el.find('button[data-loopid=' + loopId + ']').length > 0) {
-                var el = view.$el.find('button[data-loopid=' + loopId + ']');
-                el.removeAttr('disabled');
+            if (loopId) {
+                if (view.$el.find('button[data-loopid=' + loopId + ']').length > 0) {
+                    // the button is available, so remove its disabled attribute
+                    var el = view.$el.find('button[data-loopid=' + loopId + ']');
+                    el.removeAttr('disabled');
+                } else {
+                    
+                }
             }
         },
         
@@ -50,7 +51,7 @@ define(['backbone'], function(Backbone) {
                 
         initialize: function() {
             this.app.dispatcher.on('loop-loaded', this.enableLoopButton, this);
-            this.app.dispatcher.on('loops-added', this.addLoopButtons, this);
+            this.app.dispatcher.on('loop-added', this.addLoopButton, this);
         },
         
         render: function() {}
