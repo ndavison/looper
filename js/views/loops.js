@@ -36,7 +36,6 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
             var loopId = loop.get('loopId');
             if (loopId) {
                 if (view.$el.find('button[data-loopid=' + loopId + ']').length > 0) {
-                    // the button is available, so remove its disabled attribute
                     var el = view.$el.find('button[data-loopid=' + loopId + ']');
                     el.removeAttr('disabled');
                 }
