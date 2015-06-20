@@ -7,7 +7,7 @@
  
 "use strict"
 
-define(['backbone', 'rsvp'], function(Backbone, RSVP) {
+define(['backbone', 'rsvp', 'Howler'], function(Backbone, RSVP, Howl) {
     
     var Model = Backbone.Model.extend({
         
@@ -38,7 +38,7 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
         },
         
         getAudioProperties: function() {
-            return {context: this.context, volume: this.volume, pitch: this.pitch, audioData: this.audioData}
+            return {volume: this.volume, pitch: this.pitch, audioData: this.audioData}
         },
                 
         readFile: function(file) {
@@ -50,69 +50,70 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
                     model.set('fileExtension', fileMatches[1]);
                 }
                 model.reader.onload = function(ev) {
-                    model.setAudioProperties({audioData: ev.target.result});
-                    resolve(model);
+                    var loopSound = new Howl({
+                        src: [ev.target.result],
+                        loop: true,
+                        volume: model.getAudioProperties().volume,
+                        rate: model.getAudioProperties().pitch,
+                        onload: function() {
+                            model.howl = this;
+                            resolve(model);
+                        },
+                        onloaderror: function(error) {
+                            reject(Error(error));
+                        }
+                    });
                 };
                 model.reader.onerror = function(error) {
                     reject(Error(error));
                 };
-                model.reader.readAsArrayBuffer(file);
+                model.reader.readAsDataURL(file);
             });
         },
                 
         readFromURL: function(url) {
             var model = this;
-            return new RSVP.Promise(function (resolve, reject) {
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", url, true);
-                xhr.responseType = "arraybuffer";
-                xhr.onload = function() {
-                    model.setAudioProperties({audioData: xhr.response});
-                    resolve(model);
-                };
-                xhr.onerror = function() {
-                    reject(Error(error));
-                };
-                xhr.send();
+            return new RSVP.Promise(function(resolve, reject) {
+                var loopSound = new Howl({
+                    src: [url],
+                    loop: true,
+                    volume: model.getAudioProperties().volume,
+                    rate: model.getAudioProperties().pitch,
+                    onload: function() {
+                        model.howl = this;
+                        resolve(model);
+                    },
+                    onloaderror: function(error) {
+                        reject(Error(error));
+                    }
+                });
             });
         },
         
         stopLoop: function() {
-            if (this.source) {
-                this.source.stop(0);
+            if (this.howl) {
+                this.howl.stop();
             }
         },
         
         playLoop: function() {
             var model = this;
-            var data = model.audioData.slice(0);
-            var context = model.context;
-            context.decodeAudioData(data, function(buffer) {
-                var source = context.createBufferSource();
-                model.source = source;
-                source.buffer = buffer;
-                var gain = context.createGain();
-                model.gain = gain;
-                source.connect(gain);
-                gain.connect(context.destination);
-                source.start(0);
-                source.loop = true;
-                model.setVolume(model.volume);
-                model.setPitch(model.pitch);
-            });
+            model.howl.play();
+            model.setVolume(model.volume);
+            model.setPitch(model.pitch);
         },
         
         setVolume: function(level) {
             this.volume = level;
-            if (level && this.gain && this.gain.gain) {
-                this.gain.gain.value = level;
+            if (level) {
+                this.howl.volume(level);
             }
         },
         
         setPitch: function(level) {
             this.pitch = level;
-            if (level && this.source && this.source.playbackRate) {
-                this.source.playbackRate.value = level;
+            if (level && this.howl._sounds[0] && this.howl._sounds[0]._node.bufferSource) {
+                this.howl._sounds[0]._node.bufferSource.playbackRate.value = level;
             }
         },
         

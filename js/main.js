@@ -16,7 +16,8 @@ requirejs.config({
         underscore: '../bower_components/underscore/underscore-min',
         rsvp: '../bower_components/rsvp/rsvp.min',
         dropbox: '../bower_components/dropbox/lib/dropbox.min',
-        dropboxdropins: 'https://www.dropbox.com/static/api/2/dropins'
+        dropboxdropins: 'https://www.dropbox.com/static/api/2/dropins',
+        Howler: '../bower_components/howler/howler.min'
     },
     shim: {
         'backbone': {
@@ -30,6 +31,9 @@ requirejs.config({
         },
         'dropboxdropins': {
             exports: 'Dropbox'
+        },
+        'Howler': {
+            exports: 'Howl'
         }
     },
     urlArgs: "bust=" +  (new Date()).getTime()
