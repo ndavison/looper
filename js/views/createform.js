@@ -7,22 +7,24 @@
 
 "use strict"
  
-define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbone, $, Dropbox, Loop) {
+define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(Backbone, $, RSVP, Dropbox, Loop) {
     
     var View = Backbone.View.extend({
         
         el: '#view-createform',
         
         events: {
-            'change input[name=looper-file]': 'createLoop',
+            'change input[name=looper-file]': 'getFromFileReader',
             'click button#dropbox-loop': 'getFromDropbox'
         },
         
         addLoadFromDropboxButton: function() {
             var view = this;
             if (view.$el.find('button#dropbox-loop').length == 0) {
-                view.getTemplate('/looper/views/loadfromdropbox.html', {}, function(res) {
-                    view.show(res, view.$el.find('div:last-child'), true);
+                view.getTemplate('/looper/views/loadfromdropbox.html', {}).then(function(res) {
+                    return view.show(res, view.$el.find('div:last-child'), true);
+                }).catch(function(error) {
+                    console.log(error);
                 });
             }
         },
@@ -31,58 +33,69 @@ define(['backbone', 'jquery', 'dropboxdropins', 'models/loop'], function(Backbon
             this.$el.find('button#dropbox-loop').remove();
         },
         
-        createLoop: function(ev) {
+        getFromFileReader: function(ev) {
             ev.preventDefault();
             var view = this;
             var fileEl = this.$el.find('input[name="looper-file"]');
             var loops = [];
-            var loop, file;
+            var promises = [];
+            
             for (var i = 0; i < fileEl[0].files.length; i++) {
-                file = fileEl[0].files.item(i);
+                var file = fileEl[0].files.item(i);
                 if (!file.type.match(/^(audio\/(mpeg|wav|)|video\/ogg)/)) {
                     view.app.views.alerts.createAlert('The file ' + file.name + ' was not an audio file! supported formats include WAV, MP3 and OGG.', 'danger');
                     continue;
                 }
-                loop = new Loop({name: file.name});
+                var loop = new Loop({name: file.name});
                 loops.push(loop);
                 loop.setAudioProperties({context: view.app.views.loops.model.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
                 view.app.dispatcher.trigger('loop-added', loop);
-                loop.readFile(file, function(loop) {
+                
+                promises.push(loop.readFile(file).then(function(loop) {
                     view.app.dispatcher.trigger('loop-loaded', loop);
-                });
+                }));
             }
-            if (loops.length > 0) {
+            
+            RSVP.all(promises).then(function(loops) {
                 view.app.dispatcher.trigger('loops-added', loops);
-            }
+            }).catch(function(error) {
+                console.log(error);
+            });
         },
         
         getFromDropbox: function(ev) {
             ev.preventDefault();
             var view = this;
             var loops = [];
-            var loop;
+            
             Dropbox.appKey = view.attributes.dropboxDropinKey;
             Dropbox.choose({multiselect: true, linkType: 'direct', extensions: ['audio'], success: function(files) {
                 if (files.length > 0) {
+                    var promises = [];
+                    
                     for (var i = 0; i < files.length; i++) {
-                        loop = new Loop({name: files[i].name, dropboxURL: files[i].link});
+                        var loop = new Loop({name: files[i].name, dropboxURL: files[i].link});
                         loops.push(loop);
                         loop.setAudioProperties({context: view.app.views.loops.model.context, volume: view.app.views.controls.getVolume(), pitch: view.app.views.controls.getPitch()});
                         view.app.dispatcher.trigger('loop-added', loop);
-                        loop.readFromURL(files[i].link, function(loop) {
+                        
+                        promises.push(loop.readFromURL(files[i].link).then(function(loop) {
                             view.app.dispatcher.trigger('loop-loaded', loop);
-                        });
+                        }));
                     }
-                    if (loops.length > 0) {
+                    
+                    RSVP.all(promises).then(function(loops) {
                         view.app.dispatcher.trigger('loops-added', loops);
-                    }
+                    }).catch(function(error) {
+                        console.log(error);
+                    });
                 }
             }});
         },
         
         initialize: function() {
-            this.app.dispatcher.on('dropbox:signed-in', this.addLoadFromDropboxButton, this);
-            this.app.dispatcher.on('dropbox:signed-out', this.removeLoadFromDropboxButton, this);
+            this.app.dispatcher.on('signed-in', this.addLoadFromDropboxButton, this);
+            this.app.dispatcher.on('signed-out', this.removeLoadFromDropboxButton, this);
         },
         
         render: function() {}

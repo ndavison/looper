@@ -35,16 +35,11 @@ define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'mod
              * The necessary models.
              */
             app.models.dropBox = new Dropbox({key: app.config.dropboxAPIKey, receiverURL: app.config.oAuthReceiverURL});
-            
-            // proxy all Dropbox model events to the app event dispatcher, as dropbox:{event}.
-            app.dispatcher.listenTo(app.models.dropBox, 'all', function(event, args) {
-                this.trigger('dropbox:' + event, args);
-            });
-            
+                        
             /**
              * The necessary views.
              */
-            app.views.navbar = new NavBarView({model: app.models.dropBox});
+            app.views.navbar = new NavBarView();
             app.views.createForm = new CreateFormView({attributes: {dropboxDropinKey: app.config.dropboxDropinKey}});
             app.views.controls = new ControlsView();
             app.views.alerts = new AlertsView();
@@ -52,7 +47,15 @@ define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'mod
             app.views.status = new StatusView();
             
             // authenticate to Dropbox without interaction, in case the user has cached credentials
-            app.models.dropBox.auth({interactive: false});
+            app.models.dropBox.auth({interactive: false}).then(function(success) {
+                if (success) {
+                    app.dispatcher.trigger('signed-in');
+                } else {
+                    app.dispatcher.trigger('signed-out');
+                }
+            }).catch(function(error) {
+                console.log(error);
+            });
         };
     };
     

@@ -13,6 +13,8 @@ define(function() {
         
         siteRoot: '/looper',
         
+        dropBoxDir: 'looper-audio',
+        
         dropboxAPIKey: 'zr16qymzqg21hzf',
         
         dropboxDropinKey: '3oyl33j84sk1elk',

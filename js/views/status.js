@@ -17,10 +17,12 @@ define(['backbone'], function(Backbone) {
         
         addStatusMessage: function(message) {
             var view = this;
-            view.getTemplate('/looper/views/statusmessage.html', {message: message}, function(res) {
-                view.show(res, view.$el, true, function(messageEl) {
-                    messageEl.delay(3000).fadeOut(300);
-                });
+            view.getTemplate('/looper/views/statusmessage.html', {message: message}).then(function(res) {
+                return view.show(res, view.$el, true)
+            }).then(function(messageEl) {
+                messageEl.delay(5000).fadeOut(300);
+            }).catch(function(error) {
+                console.log(error);
             });
         },
                 

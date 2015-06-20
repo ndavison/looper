@@ -7,119 +7,101 @@
 
 "use strict"
  
-define(['backbone', 'dropbox'], function(Backbone, Dropbox) {
+define(['backbone', 'rsvp', 'dropbox'], function(Backbone, RSVP, Dropbox) {
     
     var Model = Backbone.Model.extend({
-        
-        defaults: {
-            'dirName': 'looper-audio',
-            'owner': null
-        },
-        
-        prepare: function(cb) {
-            cb = cb || function() {};
+                
+        dirExists: function(dir) {
             var model = this;
-            model.client.stat(model.get('dirName'), {}, function(error, dirStat) {
-                if (error || dirStat.isRemoved) {
-                    console.log(error);
-                    if (error && error.status == 404 || dirStat.isRemoved) {
-                        model.client.mkdir(model.get('dirName'), function(error, dirStat) {
-                            if (error) {
-                                console.log(error);
-                                return;
-                            }
-                            cb();
-                        });
+            return new RSVP.Promise(function(resolve, reject) {
+                model.client.stat(dir, {}, function(error, dirStat) {
+                    if (error || dirStat.isRemoved) {
+                        if (error && error.status == 404 || dirStat.isRemoved) {
+                            resolve(false);
+                        } else {
+                            reject(Error(error));
+                        }
                     } else {
-                        return;
+                        resolve(true);
                     }
-                } else {
-                    cb();
-                }
+                });
             });
         },
         
-        saveFileToDropbox: function(loop) {
+        makeDir: function(dir) {
             var model = this;
-            model.prepare(function () {
-                var path = model.get('dirName') + '/' + loop.get('loopId') + '.' + loop.get('fileExtension');
-                var data = loop.getAudioProperties().audioData;
-                var dropboxURL = loop.get('dropboxURL');
-                if (data) {
-                    if (dropboxURL) {
-                        model.trigger('status', loop.get('name') + ' was already found in your Dropbox.');
-                    } else {
-                        model.client.writeFile(path, data, {}, function(error, fileStat) {
-                            if (error) {
-                                console.log(error);
-                                return;
-                            }
-                            model.trigger('file-saved', {stat: fileStat, loop: loop});
-                            model.trigger('status', loop.get('name') + ' saved to Dropbox.');
-                            model.getShareURL(path, function(url) {
-                                model.trigger('shareurl-created', {shareURL: url, loop: loop});
-                            });
-                        });
+            return new RSVP.Promise(function(resolve, reject) {
+                model.client.mkdir(dir, function(error, dirStat) {
+                    if (error) {
+                        reject(Error(error));
                     }
-                }
+                    resolve(dirStat);
+                });
             });
         },
-        
-        getShareURL: function(path, cb) {
+                        
+        saveFileToDropbox: function(fileName, data) {
             var model = this;
-            cb = cb || function () {};
-            model.client.makeUrl(path, {downloadHack: true}, function(error, shareURL) {
-                if (error) {
-                    console.log(error);
-                    return;
-                }
-                cb(shareURL.url);
+            return new RSVP.Promise(function(resolve, reject) {
+                model.client.writeFile(fileName, data, {}, function(error, fileStat) {
+                    if (error) {
+                        reject(Error(error));
+                    }
+                    resolve(fileStat);
+                });
             });
         },
         
-        getAccountInfo: function(cb) {
-            cb = cb || function() {};
-            this.client.getAccountInfo(function(error, info) {
-                if (error) {
-                    console.log(error);
-                    return;
-                }
-                cb(info);
+        getShareURL: function(path) {
+            var model = this;
+            return new RSVP.Promise(function(resolve, reject) {
+                model.client.makeUrl(path, {downloadHack: true}, function(error, shareURL) {
+                    if (error) {
+                        reject(Error(error));
+                    }
+                    resolve(shareURL);
+                });
             });
         },
         
-        auth: function(clientOptions, cb) {
+        getAccountInfo: function() {
+            var model = this;
+            return new RSVP.Promise(function(resolve, reject) {
+                model.client.getAccountInfo(function(error, info) {
+                    if (error) {
+                        reject(Error(error));
+                    }
+                    resolve(info);
+                });
+            });
+        },
+        
+        auth: function(clientOptions) {
             var model = this;
             clientOptions = clientOptions || {};
-            cb = cb || function() {};
-            model.client.authenticate(clientOptions, function(error, client) {
-                if (error) {
-                    console.log(error);
-                    return;
-                }
-                if (model.client.isAuthenticated()) {
-                    model.trigger('signed-in', model);
-                    model.getAccountInfo(function(info) {
-                        model.set('owner', info.uid);
-                        model.trigger('signed-in-user-info', info);
-                    });
-                } else {
-                    model.trigger('signed-out', model);
-                }
-                cb(model);
+            return new RSVP.Promise(function(resolve, reject) {
+                model.client.authenticate(clientOptions, function(error, client) {
+                    if (error) {
+                        reject(Error(error));
+                    }
+                    if (model.client.isAuthenticated()) {
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                });
             });
         },
         
-        signOut: function(cb) {
+        signOut: function() {
             var model = this;
-            cb = cb || function() {};
-            model.client.signOut(function(error) {
-                if (error) {
-                    console.log(error);
-                    return;
-                }
-                model.trigger('signed-out', model);
-                cb(model);
+            return new RSVP.Promise(function(resolve, reject) {
+                model.client.signOut(function(error) {
+                    if (error) {
+                        reject(Error(error));
+                    }
+                    resolve(true);
+                });
             });
         },
         

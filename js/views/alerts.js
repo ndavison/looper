@@ -25,10 +25,9 @@ define(['backbone'], function(Backbone) {
             this.alertEl.fadeIn(200);          
         },
         
-        removeAlert: function(ev, cb) {
+        removeAlert: function(ev) {
             ev.preventDefault();
-            cb = cb || function() {};
-            this.alertEl.fadeOut(300, cb);
+            this.alertEl.fadeOut(300);
         },
         
         initialize: function() {},

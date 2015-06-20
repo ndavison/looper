@@ -7,7 +7,7 @@
  
 "use strict"
 
-define(['backbone'], function(Backbone) {
+define(['backbone', 'rsvp'], function(Backbone, RSVP) {
     
     var Model = Backbone.Model.extend({
         
@@ -41,37 +41,40 @@ define(['backbone'], function(Backbone) {
             return {context: this.context, volume: this.volume, pitch: this.pitch, audioData: this.audioData}
         },
                 
-        readFile: function(file, cb) {
+        readFile: function(file) {
             var model = this;
-            cb = cb || function() {};
-            model.set('fileType', file.type);
-            var fileMatches = file.name.match(/\.(.*)$/);
-            if (fileMatches && fileMatches[1]) {
-                model.set('fileExtension', fileMatches[1]);
-            }
-            model.reader.onload = function(ev) {
-                model.setAudioProperties({audioData: ev.target.result});
-                cb(model);
-            };
-            model.reader.readAsArrayBuffer(file);
+            return new RSVP.Promise(function(resolve, reject) {
+                model.set('fileType', file.type);
+                var fileMatches = file.name.match(/\.(.*)$/);
+                if (fileMatches && fileMatches[1]) {
+                    model.set('fileExtension', fileMatches[1]);
+                }
+                model.reader.onload = function(ev) {
+                    model.setAudioProperties({audioData: ev.target.result});
+                    resolve(model);
+                };
+                model.reader.onerror = function(error) {
+                    reject(Error(error));
+                };
+                model.reader.readAsArrayBuffer(file);
+            });
         },
                 
-        readFromURL: function(url, cb) {
+        readFromURL: function(url) {
             var model = this;
-            cb = cb || function() {};
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", url, true);
-            xhr.responseType = "blob";
-            xhr.addEventListener('load', function () {
-                if (xhr.status === 200) {
-                    model.reader.onload = function (ev) {
-                        model.setAudioProperties({audioData: ev.target.result});
-                    };
-                    model.reader.readAsArrayBuffer(xhr.response);
-                    cb(model);
-                }
-            }, false);
-            xhr.send();
+            return new RSVP.Promise(function (resolve, reject) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", url, true);
+                xhr.responseType = "arraybuffer";
+                xhr.onload = function() {
+                    model.setAudioProperties({audioData: xhr.response});
+                    resolve(model);
+                };
+                xhr.onerror = function() {
+                    reject(Error(error));
+                };
+                xhr.send();
+            });
         },
         
         stopLoop: function() {
@@ -83,23 +86,20 @@ define(['backbone'], function(Backbone) {
         playLoop: function() {
             var model = this;
             var data = model.audioData.slice(0);
-            if (data instanceof ArrayBuffer) {
-                var context = model.context;
-                context.decodeAudioData(data, function(buffer) {
-                    var source = context.createBufferSource();
-                    model.source = source;
-                    source.buffer = buffer;
-                    var gain = context.createGain();
-                    model.gain = gain;
-                    source.connect(gain);
-                    gain.connect(context.destination);
-                    source.start(0);
-                    source.loop = true;
-                    model.isPlaying = true;
-                    model.setVolume(model.volume);
-                    model.setPitch(model.pitch);
-                });
-            }
+            var context = model.context;
+            context.decodeAudioData(data, function(buffer) {
+                var source = context.createBufferSource();
+                model.source = source;
+                source.buffer = buffer;
+                var gain = context.createGain();
+                model.gain = gain;
+                source.connect(gain);
+                gain.connect(context.destination);
+                source.start(0);
+                source.loop = true;
+                model.setVolume(model.volume);
+                model.setPitch(model.pitch);
+            });
         },
         
         setVolume: function(level) {

@@ -7,27 +7,43 @@
  
 "use strict"
 
-define(['backbone', 'models/dropbox'], function(Backbone, Dropbox) {
+define(['backbone', 'rsvp'], function(Backbone, RSVP) {
     
     var View = Backbone.View.extend({
         
         el: '#view-navbar',
-        
-        model: null,
-        
+                
         events: {
             'click button#auth-btn': 'auth',
-            'click button#signout-btn': 'signout',
+            'click button#signout-btn': 'signOut',
         },
         
         auth: function(ev) {
+            var view = this;
             ev.preventDefault();
-            this.model.auth();
+            view.app.models.dropBox.auth().then(function(success) {
+                if (success) {
+                    view.app.dispatcher.trigger('signed-in');
+                    return view.app.models.dropBox.getAccountInfo();
+                } else {
+                    view.app.dispatcher.trigger('signed-out');
+                    return null;
+                }
+            }).then(function(accountInfo) {
+                if (accountInfo) view.app.dispatcher.trigger('signed-in-user-info', accountInfo);
+            }).catch(function(error) {
+                console.log(error);
+            });
         },
         
-        signout: function(ev) {
+        signOut: function(ev) {
+            var view = this;
             ev.preventDefault();
-            this.model.signOut();
+            this.app.models.dropBox.signOut().then(function() {
+                view.app.dispatcher.trigger('signed-out');
+            }).catch(function(error) {
+                console.log(error);
+            });;
         },
         
         signedIn: function() {
@@ -35,13 +51,19 @@ define(['backbone', 'models/dropbox'], function(Backbone, Dropbox) {
             if (view.$el.find('button#auth-btn').length > 0) {
                 view.$el.find('button#auth-btn').remove();
             }
-            view.model.getAccountInfo(function(info) {
-                view.getTemplate('/looper/views/signout.html', {}, function(res) {
-                    view.show(res, view.$el.find('#navbar-buttons'), true);
-                    view.getTemplate('/looper/views/signinmsg.html', {name: info.name}, function(res) {
-                        view.show(res, view.$el.find('#navbar-buttons'), true);
-                    }); 
-                });
+            view.app.models.dropBox.getAccountInfo().then(function(info) {
+                return view.getTemplate('/looper/views/signout.html', {})
+                    .then(function(res) {
+                        var promises = [
+                            view.show(res, view.$el.find('#navbar-buttons'), true),
+                            view.getTemplate('/looper/views/signinmsg.html', {name: info.name}).then(function(res) {
+                                return view.show(res, view.$el.find('#navbar-buttons'), true);
+                            })
+                        ];
+                        return RSVP.all(promises);
+                    });
+            }).catch(function(error) {
+                console.log(error);
             });
         },
         
@@ -51,14 +73,16 @@ define(['backbone', 'models/dropbox'], function(Backbone, Dropbox) {
                 view.$el.find('p#signin-msg').remove();
                 view.$el.find('button#signout-btn').remove();
             }
-            view.getTemplate('/looper/views/signin.html', {}, function(res) {
-                view.show(res, view.$el.find('#navbar-buttons'), true);
+            view.getTemplate('/looper/views/signin.html', {}).then(function(res) {
+                return view.show(res, view.$el.find('#navbar-buttons'), true);
+            }).catch(function(error) {
+                console.log(error);
             });
         },
                 
         initialize: function() {
-            this.app.dispatcher.on('dropbox:signed-in', this.signedIn, this);;
-            this.app.dispatcher.on('dropbox:signed-out', this.signedOut, this);
+            this.app.dispatcher.on('signed-in', this.signedIn, this);;
+            this.app.dispatcher.on('signed-out', this.signedOut, this);
         },
         
         render: function() {}
