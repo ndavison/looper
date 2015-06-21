@@ -66,7 +66,7 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
             var view = this;
             var loops = [];
             
-            Dropbox.appKey = view.attributes.dropboxDropinKey;
+            Dropbox.appKey = view.app.config.dropboxDropinKey;
             Dropbox.choose({multiselect: true, linkType: 'direct', extensions: ['audio'], success: function(files) {
                 if (files.length > 0) {
                     var promises = [];

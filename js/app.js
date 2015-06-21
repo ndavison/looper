@@ -41,7 +41,7 @@ define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'mod
              */
             app.views.navbar = new NavBarView();
             app.views.menu = new MenuView();
-            app.views.createform = new CreateFormView({attributes: {dropboxDropinKey: app.config.dropboxDropinKey}});
+            app.views.createform = new CreateFormView();
             app.views.findlooper = new FindLooperView();
             app.views.controls = new ControlsView();
             app.views.alerts = new AlertsView();
