@@ -11,8 +11,6 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
     
     var View = Backbone.View.extend({
         
-        el: '#view-createform',
-        
         events: {
             'change input[name=looper-file]': 'getFromFileReader',
             'click button#dropbox-loop': 'getFromDropbox'
@@ -21,7 +19,7 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
         addLoadFromDropboxButton: function() {
             var view = this;
             if (view.$el.find('button#dropbox-loop').length == 0) {
-                view.getTemplate('/looper/views/loadfromdropbox.html', {}).then(function(res) {
+                view.getTemplate('/looper/views/loadfromdropbox.html').then(function(res) {
                     return view.show(res, view.$el.find('div:last-child'), true);
                 }).catch(function(error) {
                     console.log(error);
@@ -98,7 +96,19 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
             this.app.dispatcher.on('signed-out', this.removeLoadFromDropboxButton, this);
         },
         
-        render: function() {}
+        render: function() {
+            var self = this;
+            self.getTemplate('/looper/views/createform.html').then(function(res) {
+                self.show(res);
+                self.delegateEvents();
+            }).then(function() {
+                if (self.app.models.dropBox.isAuthenticated()) {
+                    self.addLoadFromDropboxButton();
+                }
+            }).catch(function(error) {
+                console.log(error);
+            });
+        }
         
     });
     
