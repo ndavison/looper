@@ -52,12 +52,18 @@ define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'mod
             app.models.dropBox.auth({interactive: false}).then(function(success) {
                 if (success) {
                     app.dispatcher.trigger('signed-in');
+                    return app.models.dropBox.getAccountInfo();
                 } else {
                     app.dispatcher.trigger('signed-out');
+                    return null
                 }
-            }).then(function() {
+            }).then(function(accountInfo) {
                 // set the default menu item
                 app.views.menu.activeDefault();
+                
+                if (accountInfo) {
+                    app.dispatcher.trigger('signed-in-user-info', accountInfo);
+                }
             }).catch(function(error) {
                 console.log(error);
             });

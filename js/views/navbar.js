@@ -30,7 +30,9 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
                     return null;
                 }
             }).then(function(accountInfo) {
-                if (accountInfo) view.app.dispatcher.trigger('signed-in-user-info', accountInfo);
+                if (accountInfo) {
+                    view.app.dispatcher.trigger('signed-in-user-info', accountInfo);
+                }
             }).catch(function(error) {
                 console.log(error);
             });
