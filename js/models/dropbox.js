@@ -105,6 +105,10 @@ define(['backbone', 'rsvp', 'dropbox'], function(Backbone, RSVP, Dropbox) {
             });
         },
         
+        isAuthenticated: function() {
+            return this.client.isAuthenticated();
+        },
+        
         initialize: function() {
             var model = this;
             model.client = new Dropbox.Client({key: model.attributes.key});
