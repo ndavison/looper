@@ -7,7 +7,7 @@
 
 "use strict"
  
-define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'models/loops', 'views/alerts', 'views/navbar', 'views/createform', 'views/controls', 'views/loops', 'views/status'], function(Config, Extensions, Backbone, _, Dropbox, Loops, AlertsView, NavBarView, CreateFormView, ControlsView, LoopsView, StatusView) {
+define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'models/loops', 'views/alerts', 'views/navbar', 'views/menu', 'views/createform', 'views/findlooper', 'views/controls', 'views/loops', 'views/status'], function(Config, Extensions, Backbone, _, Dropbox, Loops, AlertsView, NavBarView, MenuView, CreateFormView, FindLooperView, ControlsView, LoopsView, StatusView) {
     
     var App = function() {
         
@@ -40,7 +40,9 @@ define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'mod
              * The necessary views.
              */
             app.views.navbar = new NavBarView();
-            app.views.createForm = new CreateFormView({attributes: {dropboxDropinKey: app.config.dropboxDropinKey}});
+            app.views.menu = new MenuView();
+            app.views.createform = new CreateFormView({attributes: {dropboxDropinKey: app.config.dropboxDropinKey}});
+            app.views.findlooper = new FindLooperView();
             app.views.controls = new ControlsView();
             app.views.alerts = new AlertsView();
             app.views.loops = new LoopsView({model: new Loops()});
@@ -53,9 +55,13 @@ define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'mod
                 } else {
                     app.dispatcher.trigger('signed-out');
                 }
+            }).then(function() {
+                // set the default menu item
+                app.views.menu.activeDefault();
             }).catch(function(error) {
                 console.log(error);
             });
+            
         };
     };
     
