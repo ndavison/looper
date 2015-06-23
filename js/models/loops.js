@@ -7,17 +7,11 @@
 
 "use strict"
  
-define(['backbone', 'models/loop'], function(Backbone, Loop) {
+define(['backbone'], function(Backbone) {
     
     var Collection = Backbone.Collection.extend({
         
-        url: '/looper/api/loops',
-        
-        model: Loop,
-                          
-        initialize: function() {
-            this.looperId = Math.random().toString(36).replace(/[^a-z]+/g, '');
-        }
+        initialize: function() {}
         
     });
     

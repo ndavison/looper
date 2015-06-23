@@ -7,7 +7,7 @@
  
 "use strict"
 
-define(['backbone', 'rsvp'], function(Backbone, RSVP) {
+define(['backbone', 'rsvp', 'models/looper', 'models/loops'], function(Backbone, RSVP, Looper, Loops) {
    
     var View = Backbone.View.extend({
         
@@ -22,7 +22,7 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
         
         addLoopButton: function(loop) {
             var view = this;
-            view.getTemplate('/looper/views/playloop.html', {loopId: loop.get('loopId'), name: loop.get('name'), enabled: loop.getAudioProperties().audioData ? true : false})
+            view.getTemplate('/looper/views/playloop.html', {loopFileId: loop.get('loopFileId'), name: loop.get('name'), enabled: false})
                 .then(function(res) {
                     view.addSaveForm();
                     return view.show(res, view.$el.find('div#loops-buttons'), true);
@@ -33,10 +33,10 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
                 
         enableLoopButton: function(loop) {
             var view = this;
-            var loopId = loop.get('loopId');
-            if (loopId) {
-                if (view.$el.find('button[data-loopid=' + loopId + ']').length > 0) {
-                    var el = view.$el.find('button[data-loopid=' + loopId + ']');
+            var loopFileId = loop.get('loopFileId');
+            if (loopFileId) {
+                if (view.$el.find('button[data-loopfileid=' + loopFileId + ']').length > 0) {
+                    var el = view.$el.find('button[data-loopfileid=' + loopFileId + ']');
                     el.removeAttr('disabled');
                 }
             }
@@ -56,19 +56,19 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
         playLoop: function(ev) {
             ev.preventDefault();
             var target = ev.currentTarget;
-            var loopId = $(target).attr('data-loopid');
-            var loop = this.model.findWhere({loopId: loopId});
+            var loopFileId = $(target).attr('data-loopfileid');
+            var loop = this.model.get('loops').findWhere({loopFileId: loopFileId});
             if (loop) {
                 this.stopLoops();
-                loop.playLoop();
+                loop.audio.play();
             }
         },
         
         stopLoops: function(exceptThisLoop) {
             var view = this;
-            view.model.forEach(function(loop) {
-                if (exceptThisLoop && exceptThisLoop.get('loopId') != loop.get('loopId') || !exceptThisLoop) {
-                    loop.stopLoop();
+            view.model.get('loops').forEach(function(loop) {
+                if (exceptThisLoop && exceptThisLoop.get('loopFileId') != loop.get('loopFileId') || !exceptThisLoop) {
+                    loop.audio.stop();
                 }
             });
         },
@@ -83,27 +83,29 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
                     return exists ? null : view.app.models.dropBox.makeDir(dropBoxDir);                    
                 })
                 .then(function() { 
-                    var loopSavePromises = [];
-                    for (var i = 0; i < view.model.models.length; i++) {
-                        var loop = view.model.models[i];
-                        var fileName = loop.get('loopId') + '.' + loop.get('fileExtension');
+                    var promises = [];
+                    for (var i = 0; i < view.model.get('loops').models.length; i++) {
+                        var loop = view.model.get('loops').models[i];
+                        var fileName = loop.get('loopFileId') + '.' + loop.get('fileExtension');
                         if (loop.get('dropboxURL')) {
                             view.app.dispatcher.trigger('status', '"' + fileName + '" already found in your Dropbox...');
                         } else {
-                            var data = loop.getAudioProperties().audioData;
-                            view.app.dispatcher.trigger('status', 'Saving "' + fileName + '" to Dropbox...');
-                            loopSavePromises.push(view.app.models.dropBox.saveFileToDropbox(dropBoxDir + '/' + fileName, data));
+                            var data = loop.dataURItoBlob(loop.audio.get('src'));
+                            if (data) {
+                                view.app.dispatcher.trigger('status', 'Saving "' + loop.get('name') + '" to Dropbox...');
+                                promises.push(view.app.models.dropBox.saveFileToDropbox(dropBoxDir + '/' + fileName, data));
+                            }
                         }
                     }
-                    return RSVP.all(loopSavePromises) 
+                    return RSVP.all(promises);
                 })
                 .then(function(fileStats) {
                     if (fileStats.length > 0) {
-                        var ShareURLPromises = _.map(fileStats, function(fileStat) {
+                        var promises = _.map(fileStats, function(fileStat) {
                             return view.app.models.dropBox.getShareURL(fileStat.path);
                         });
                         view.app.dispatcher.trigger('status', 'Getting URLs for the uploaded files...');
-                        return RSVP.all(ShareURLPromises);
+                        return RSVP.all(promises);
                     }
                 })
                 .then(function(shareURLs) {
@@ -112,12 +114,19 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
                             var url = shareURLs[i].url;
                             var urlMatches = url.match(/.*\/([^\.]+)\./);
                             if (urlMatches && urlMatches[1]) {
-                                var loopId = urlMatches[1];
-                                var loop = view.model.findWhere({loopId: loopId});
+                                var loopFileId = urlMatches[1];
+                                var loop = view.model.get('loops').findWhere({loopFileId: loopFileId});
                                 loop.set('dropboxURL', url);
                             }
                         }
                     }
+                })
+                .then(function() {
+                    view.app.dispatcher.trigger('status', 'Saving your Looper metadata to our servers...');
+                    return view.model.saveWithPromise();
+                })
+                .then(function() {
+                    view.app.dispatcher.trigger('status', 'Done!');
                 })
                 .catch(function(error) {
                     console.log(error);
@@ -125,47 +134,36 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
         },
         
         changeVolumes: function(level) {
-            this.model.invoke('setVolume', level);
+            this.model.get('loops').forEach(function(loop) {
+                loop.audio.setVolume(level);
+            });
         },
         
         changePitches: function(level) {
-            this.model.invoke('setPitch', level);
+            this.model.get('loops').forEach(function(loop) {
+                loop.audio.setPitch(level);
+            });
         },
         
         setUserId: function(info) {
             if (info.uid) {
-                this.model.userId = info.uid;
-                this.model.forEach(function(loop) {
-                    loop.set('userId', info.uid);
-                });
-            }
-        },
-        
-        setShareURL: function(params) {
-            if (params.shareURL && params.loop) {
-                var loop = this.model.findWhere({loopId: params.loop.get('loopId')});
-                if (loop) {
-                    loop.set('dropboxURL', params.shareURL);
-                }
+                this.model.set('userId', info.uid);
             }
         },
         
         setLooperName: function() {
             var name = this.$el.find('input[name=looper-name]').val();
             if (name) {
-                this.model.forEach(function(loop) {
-                    loop.set('looperName', name);
-                });
+                this.model.set('name', name);
             }
         },
         
         addLoopToCollection: function(loop) {
-            loop.set('looperId', this.model.looperId);
-            loop.set('userId', this.model.userId);
-            this.model.add(loop);
+            this.model.get('loops').add(loop);
         },
                 
         initialize: function() {
+            this.model = new Looper({loops: new Loops()});
             var dispatcher = this.app.dispatcher;
             dispatcher.on('loop-loaded', this.enableLoopButton, this);
             dispatcher.on('loop-added', this.addLoopToCollection, this);
@@ -174,7 +172,6 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
             dispatcher.on('change-volume', this.changeVolumes, this);
             dispatcher.on('change-pitch', this.changePitches, this);
             dispatcher.on('signed-in-user-info', this.setUserId, this);
-            dispatcher.on('dropbox:shareurl-created', this.setShareURL, this);
         },
         
         render: function() {}

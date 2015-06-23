@@ -7,7 +7,7 @@
 
 "use strict"
  
-define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'models/loops', 'views/alerts', 'views/navbar', 'views/menu', 'views/createform', 'views/findlooper', 'views/controls', 'views/loops', 'views/status'], function(Config, Extensions, Backbone, _, Dropbox, Loops, AlertsView, NavBarView, MenuView, CreateFormView, FindLooperView, ControlsView, LoopsView, StatusView) {
+define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'views/alerts', 'views/navbar', 'views/menu', 'views/createform', 'views/findlooper', 'views/controls', 'views/loops', 'views/status'], function(Config, Extensions, Backbone, _, Dropbox, AlertsView, NavBarView, MenuView, CreateFormView, FindLooperView, ControlsView, LoopsView, StatusView) {
     
     var App = function() {
         
@@ -45,7 +45,7 @@ define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'mod
             app.views.findlooper = new FindLooperView();
             app.views.controls = new ControlsView();
             app.views.alerts = new AlertsView();
-            app.views.loops = new LoopsView({model: new Loops()});
+            app.views.loops = new LoopsView();
             app.views.status = new StatusView();
             
             // authenticate to Dropbox without interaction, in case the user has cached credentials

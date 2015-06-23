@@ -7,124 +7,82 @@
  
 "use strict"
 
-define(['backbone', 'rsvp', 'Howler'], function(Backbone, RSVP, Howl) {
+define(['backbone', 'rsvp', 'Howler', 'models/audio'], function(Backbone, RSVP, Howl, Audio) {
     
     var Model = Backbone.Model.extend({
         
+        idAttribute: '_id',
+           
         defaults: {
-            loopId: '',
-            looperId: '',
-            looperName: '',
-            userId: '',
+            loopFileId: '',
             name: '',
             dropboxURL: '',
             fileType: '',
-            fileExtension: '',
+            fileExtension: ''
         },
         
-        setAudioProperties: function(params) {
-            if (params.context) {
-                this.context = params.context;
+        audio: null,
+                
+        /**
+         * http://stackoverflow.com/a/5100158/3619924
+         */
+        dataURItoBlob: function(dataURI) {
+            var byteString;
+            if (dataURI.split(',')[0].indexOf('base64') >= 0) {
+                byteString = atob(dataURI.split(',')[1]);
+            } else {
+                byteString = unescape(dataURI.split(',')[1]);
             }
-            if (params.volume) {
-                this.volume = params.volume;
+            var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            var ia = new Uint8Array(byteString.length);
+            for (var i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
             }
-            if (params.pitch) {
-                this.pitch = params.pitch;
-            }
-            if (params.audioData) {
-                this.audioData = params.audioData;
-            }
-        },
-        
-        getAudioProperties: function() {
-            return {volume: this.volume, pitch: this.pitch, audioData: this.audioData}
+            return new Blob([ia], {type:mimeString});
         },
                 
         readFile: function(file) {
             var model = this;
+            var reader = new FileReader();
             return new RSVP.Promise(function(resolve, reject) {
                 model.set('fileType', file.type);
                 var fileMatches = file.name.match(/\.(.*)$/);
                 if (fileMatches && fileMatches[1]) {
                     model.set('fileExtension', fileMatches[1]);
                 }
-                model.reader.onload = function(ev) {
-                    var loopSound = new Howl({
-                        src: [ev.target.result],
-                        loop: true,
-                        volume: model.getAudioProperties().volume,
-                        rate: model.getAudioProperties().pitch,
-                        onload: function() {
-                            model.howl = this;
-                            resolve(model);
-                        },
-                        onloaderror: function(error) {
-                            reject(Error(error));
-                        }
+                reader.onload = function(ev) {
+                    model.instantiateAudio({src: ev.target.result}).then(function() {
+                        resolve(model);
                     });
                 };
-                model.reader.onerror = function(error) {
+                reader.onerror = function(error) {
                     reject(Error(error));
                 };
-                model.reader.readAsDataURL(file);
+                reader.readAsDataURL(file);
             });
         },
                 
         readFromURL: function(url) {
             var model = this;
             return new RSVP.Promise(function(resolve, reject) {
-                var loopSound = new Howl({
-                    src: [url],
-                    loop: true,
-                    volume: model.getAudioProperties().volume,
-                    rate: model.getAudioProperties().pitch,
-                    onload: function() {
-                        model.howl = this;
-                        resolve(model);
-                    },
-                    onloaderror: function(error) {
-                        reject(Error(error));
-                    }
+                model.instantiateAudio({src: url}).then(function() {
+                    resolve(model);
                 });
             });
         },
         
-        stopLoop: function() {
-            if (this.howl) {
-                this.howl.stop();
-            }
+        instantiateAudio: function(options) {
+            var self = this;
+            return new RSVP.Promise(function(resolve, reject) {
+                self.audio = new Audio(options);
+                self.audio.loadAudio().then(function() {
+                    resolve(self);
+                });
+            });
         },
-        
-        playLoop: function() {
-            var model = this;
-            model.howl.play();
-            model.setVolume(model.volume);
-            model.setPitch(model.pitch);
-        },
-        
-        setVolume: function(level) {
-            this.volume = level;
-            if (level) {
-                this.howl.volume(level);
-            }
-        },
-        
-        setPitch: function(level) {
-            this.pitch = level;
-            if (level && this.howl._sounds[0] && this.howl._sounds[0]._node.bufferSource) {
-                this.howl._sounds[0]._node.bufferSource.playbackRate.value = level;
-            }
-        },
-        
-        saveMetaData: function() {
-            this.save(this.attributes);
-        },
-        
+                        
         initialize: function() {
-            this.set('loopId', Math.random().toString(36).replace(/[^a-z]+/g, ''));
-            this.on('change:dropboxURL', this.saveMetaData, this);
-            this.reader = new FileReader();
+            this.set('loopFileId', Math.random().toString(36).replace(/[^a-z]+/g, ''));
         }
         
     });
