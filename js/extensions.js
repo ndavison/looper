@@ -79,21 +79,41 @@ define(['backbone', 'jquery', 'rsvp'], function(Backbone, $, RSVP) {
             };
             
             /**
-             * model#saveAsPromise as an RSVP Promise.
+             * model#save as an RSVP Promise.
              */
             Backbone.Model.prototype.saveWithPromise = function() {
                 var self = this;
+                var saveArguments = arguments;
                 return new RSVP.Promise(function(resolve, reject) {
-                    var jqXHR = Backbone.Model.prototype.save.apply(self, arguments);
-                    jqXHR.done(function(data, textStatus, jqXHR) {
-                        resolve(data);
-                    })
-                    .fail(function(jqXHR, textStatus, errorThrown) {
-                        reject(Error(textStatus));
-                    });
+                    var save = Backbone.Model.prototype.save.apply(self, saveArguments);
+                    save
+                        .done(function(data, textStatus, jqXHR) {
+                            resolve(data);
+                        })
+                        .fail(function(jqXHR, textStatus, errorThrown) {
+                            reject(Error(textStatus));
+                        });
                     
                 });
             };
+            
+            /**
+             * collection#fetch as an RSVP Promise.
+             */
+            Backbone.Collection.prototype.fetchWithPromise = function() {
+                var self = this;
+                var fetchArguments = arguments;
+                return new RSVP.Promise(function(resolve, reject) {
+                    fetchArguments[0].success = function(collection, response, options) {
+                        resolve(response);
+                    };
+                    fetchArguments[0].error = function(collection, response, options) {
+                        reject(response);
+                    };
+                    Backbone.Collection.prototype.fetch.apply(self, fetchArguments);
+                });
+            };
+            
             
         }
         
