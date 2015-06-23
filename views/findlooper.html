@@ -1,6 +1,6 @@
 <form>
     <div class="col-xs-8">
-        <input type="text" class="form-control" name="looper-searchterm" placeholder="Search for an existing Looper">
+        <input type="text" class="form-control" name="looper-searchterm" placeholder="Search for an existing Looper" value="<%- searchterm %>">
     </div>
     <div class="col-xs-3">
         <button id="looper-find" type="button" class="btn btn-primary">
@@ -8,3 +8,4 @@
         </button>
     </div>
 </form>
+<div id="findlooper-results" class="col-xs-11 col-md-12"></div>
