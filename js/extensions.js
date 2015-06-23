@@ -78,6 +78,23 @@ define(['backbone', 'jquery', 'rsvp'], function(Backbone, $, RSVP) {
                 });
             };
             
+            /**
+             * model#saveAsPromise as an RSVP Promise.
+             */
+            Backbone.Model.prototype.saveWithPromise = function() {
+                var self = this;
+                return new RSVP.Promise(function(resolve, reject) {
+                    var jqXHR = Backbone.Model.prototype.save.apply(self, arguments);
+                    jqXHR.done(function(data, textStatus, jqXHR) {
+                        resolve(data);
+                    })
+                    .fail(function(jqXHR, textStatus, errorThrown) {
+                        reject(Error(textStatus));
+                    });
+                    
+                });
+            };
+            
         }
         
     };
