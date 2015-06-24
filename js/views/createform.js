@@ -35,8 +35,6 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
             ev.preventDefault();
             var view = this;
             var fileEl = this.$el.find('input[name="looper-file"]');
-            var loops = [];
-            var promises = [];
             
             for (var i = 0; i < fileEl[0].files.length; i++) {
                 var file = fileEl[0].files.item(i);
@@ -44,51 +42,28 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
                     view.app.views.alerts.createAlert('The file ' + file.name + ' was not an audio file! supported formats include WAV, MP3 and OGG.', 'danger');
                     continue;
                 }
-                var loop = new Loop({name: file.name});
-                loops.push(loop);
-                view.app.dispatcher.trigger('loop-added', loop);
-                
-                promises.push(loop.readFile(file).then(function(loop) {
-                    loop.audio.setVolume(view.app.views.controls.getVolume());
-                    loop.audio.setPitch(view.app.views.controls.getPitch());
-                    view.app.dispatcher.trigger('loop-loaded', loop);
-                }));
+                var reader = new FileReader();
+                reader.onload = function(ev) {
+                    view.app.dispatcher.trigger('file-read', {name: file.name, data: ev.target.result});
+                };
+                reader.onerror = function(error) {
+                    console.log(error);
+                };
+                reader.readAsDataURL(file);
             }
-            
-            RSVP.all(promises).then(function(loops) {
-                view.app.dispatcher.trigger('loops-added', loops);
-            }).catch(function(error) {
-                console.log(error);
-            });
         },
         
         getFromDropbox: function(ev) {
             ev.preventDefault();
             var view = this;
-            var loops = [];
             
             Dropbox.appKey = view.app.config.dropboxDropinKey;
             Dropbox.choose({multiselect: true, linkType: 'direct', extensions: ['audio'], success: function(files) {
                 if (files.length > 0) {
-                    var promises = [];
-                    
                     for (var i = 0; i < files.length; i++) {
-                        var loop = new Loop({name: files[i].name, dropboxURL: files[i].link});
-                        loops.push(loop);
-                        view.app.dispatcher.trigger('loop-added', loop);
-                        
-                        promises.push(loop.readFromURL(files[i].link).then(function(loop) {
-                            loop.audio.setVolume(view.app.views.controls.getVolume());
-                            loop.audio.setPitch(view.app.views.controls.getPitch());
-                            view.app.dispatcher.trigger('loop-loaded', loop);
-                        }));
+                        var file = files[i];
+                        view.app.dispatcher.trigger('file-read', {name: file.name, data: file.link});
                     }
-                    
-                    RSVP.all(promises).then(function(loops) {
-                        view.app.dispatcher.trigger('loops-added', loops);
-                    }).catch(function(error) {
-                        console.log(error);
-                    });
                 }
             }});
         },

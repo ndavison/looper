@@ -40,36 +40,6 @@ define(['backbone', 'rsvp', 'Howler', 'models/audio'], function(Backbone, RSVP, 
             }
             return new Blob([ia], {type:mimeString});
         },
-                
-        readFile: function(file) {
-            var model = this;
-            var reader = new FileReader();
-            return new RSVP.Promise(function(resolve, reject) {
-                model.set('fileType', file.type);
-                var fileMatches = file.name.match(/\.(.*)$/);
-                if (fileMatches && fileMatches[1]) {
-                    model.set('fileExtension', fileMatches[1]);
-                }
-                reader.onload = function(ev) {
-                    model.instantiateAudio({src: ev.target.result}).then(function() {
-                        resolve(model);
-                    });
-                };
-                reader.onerror = function(error) {
-                    reject(Error(error));
-                };
-                reader.readAsDataURL(file);
-            });
-        },
-                
-        readFromURL: function(url) {
-            var model = this;
-            return new RSVP.Promise(function(resolve, reject) {
-                model.instantiateAudio({src: url}).then(function() {
-                    resolve(model);
-                });
-            });
-        },
         
         instantiateAudio: function(options) {
             var self = this;
@@ -82,7 +52,9 @@ define(['backbone', 'rsvp', 'Howler', 'models/audio'], function(Backbone, RSVP, 
         },
                         
         initialize: function() {
-            this.set('loopFileId', Math.random().toString(36).replace(/[^a-z]+/g, ''));
+            if (!this.get('loopFileId')) {
+                this.set('loopFileId', Math.random().toString(36).replace(/[^a-z]+/g, ''));
+            }
         }
         
     });

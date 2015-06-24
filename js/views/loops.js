@@ -7,7 +7,7 @@
  
 "use strict"
 
-define(['backbone', 'rsvp', 'models/looper', 'models/loops'], function(Backbone, RSVP, Looper, Loops) {
+define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], function(Backbone, RSVP, Looper, Loops, Loop) {
    
     var View = Backbone.View.extend({
         
@@ -22,13 +22,17 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops'], function(Backbone,
         
         addLoopButton: function(loop) {
             var view = this;
-            view.getTemplate('/looper/views/playloop.html', {loopFileId: loop.get('loopFileId'), name: loop.get('name'), enabled: false})
+            return new RSVP.Promise(function(resolve, reject) {
+                return view.getTemplate('/looper/views/playloop.html', {loopFileId: loop.get('loopFileId'), name: loop.get('name'), enabled: false})
                 .then(function(res) {
                     view.addSaveForm();
                     return view.show(res, view.$el.find('div#loops-buttons'), true);
+                }).then(function() {
+                    resolve();
                 }).catch(function(error) {
-                    console.log(error);
-                });
+                    reject(error);
+                }); 
+            });
         },
                 
         enableLoopButton: function(loop) {
@@ -71,6 +75,18 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops'], function(Backbone,
                     loop.audio.stop();
                 }
             });
+        },
+        
+        loadLooper: function(looper) {
+            /*if (looper) {
+                this.model = looper;
+                if (this.model.loops.length > 0) {
+                    for (var i = 0; i < this.model.loops.length; i++) {
+                        var loop = new Loop(this.model.loops[i].attributes);
+                        
+                    }
+                }
+            }*/
         },
         
         saveLoops: function() {
@@ -161,14 +177,32 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops'], function(Backbone,
         addLoopToCollection: function(loop) {
             this.model.get('loops').add(loop);
         },
+        
+        createLoop: function(file) {
+            var self = this;
+            var loop = new Loop({name: file.name});
+            loop.instantiateAudio({src: file.data})
+                .then(function(loop) {
+                    loop.audio.setVolume(self.app.views.controls.getVolume());
+                    loop.audio.setPitch(self.app.views.controls.getPitch());
+                    self.addLoopToCollection(loop);
+                    self.addLoopButton(loop).then(function() {
+                        self.enableLoopButton(loop);
+                        self.app.dispatcher.trigger('loop-loaded', loop);
+                    });
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+        },
                 
         initialize: function() {
             this.model = new Looper({loops: new Loops()});
             var dispatcher = this.app.dispatcher;
+            dispatcher.on('looper-selected', this.loadLooper, this);
+            dispatcher.on('file-read', this.createLoop, this);
             dispatcher.on('loop-loaded', this.enableLoopButton, this);
-            dispatcher.on('loop-added', this.addLoopToCollection, this);
-            dispatcher.on('loop-added', this.addLoopButton, this);
-            dispatcher.on('save-loops', this.saveLoops, this);
+            //dispatcher.on('save-loops', this.saveLoops, this);
             dispatcher.on('change-volume', this.changeVolumes, this);
             dispatcher.on('change-pitch', this.changePitches, this);
             dispatcher.on('signed-in-user-info', this.setUserId, this);
