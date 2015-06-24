@@ -46,7 +46,7 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
                 reader.onload = function(ev) {
                     var fileMatches = file.name.match(/\.(.*)$/);
                     var fileExtension = fileMatches && fileMatches[1] ? fileMatches[1] : '';
-                    view.app.dispatcher.trigger('file-read', {name: file.name, data: ev.target.result, type: file.type, extension: fileExtension});
+                    view.app.dispatcher.trigger('file-read', {name: file.name, data: ev.target.result, fileType: file.type, fileExtension: fileExtension});
                 };
                 reader.onerror = function(error) {
                     console.log(error);
