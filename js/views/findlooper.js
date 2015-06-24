@@ -12,7 +12,7 @@ define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
     var View = Backbone.View.extend({
                 
         events: {
-            'click button': 'doSearch',
+            'submit form': 'doSearch',
             'click div#findlooper-results a': 'selectLooper'
         },
         
