@@ -5,6 +5,8 @@
  *
  */
 
+"use strict";
+ 
 define(['backbone', 'Howler', 'rsvp'], function(Backbone, Howl, RSVP) {
     
     var Model = Backbone.Model.extend({
