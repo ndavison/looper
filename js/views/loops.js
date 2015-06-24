@@ -23,7 +23,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
         addLoopButton: function(loop) {
             var view = this;
             return new RSVP.Promise(function(resolve, reject) {
-                return view.getTemplate('/looper/views/playloop.html', {loopFileId: loop.get('loopFileId'), name: loop.get('name'), enabled: false})
+                return view.getTemplate('/looper/views/playloop.html', {loopFileId: loop.get('loopFileId'), name: loop.get('name'), enabled: loop.audio ? true : false})
                 .then(function(res) {
                     view.addSaveForm();
                     return view.show(res, view.$el.find('div#loops-buttons'), true);
@@ -185,18 +185,19 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
             if (!params.data && params.dropboxURL) {
                 params.data = params.dropboxURL;
             }
-            return new RSVP.Promise(function(resolve, reject) {
-                loop.instantiateAudio({src: params.data})
-                .then(function(loop) {
-                    loop.audio.setVolume(self.app.views.controls.getVolume());
-                    loop.audio.setPitch(self.app.views.controls.getPitch());
-                    self.addLoopToCollection(loop);
-                    self.addLoopButton(loop).then(function() {
+            return new RSVP.Promise(function(resolve) {
+                self.addLoopButton(loop)
+                    .then(function() {
+                        return loop.instantiateAudio({src: params.data})
+                    })
+                    .then(function(loop) {
+                        loop.audio.setVolume(self.app.views.controls.getVolume());
+                        loop.audio.setPitch(self.app.views.controls.getPitch());
+                        self.addLoopToCollection(loop);
                         self.enableLoopButton(loop);
                         self.app.dispatcher.trigger('loop-loaded', loop);
                         resolve(loop);
                     });
-                });
             });
         },
         
