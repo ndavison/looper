@@ -66,14 +66,9 @@ define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
         
         render: function() {
             var self = this;
-            self.getTemplate('/looper/views/findlooper.html', {searchterm: self.searchterm}).then(function(res) {
+            self.getTemplate('/looper/views/findlooper.html').then(function(res) {
                 self.show(res);
                 self.delegateEvents();
-            })
-            .then(function() {
-                if (self.collection.models.length > 0 || self.searchterm) {
-                    self.showResults();
-                }
             })
             .catch(function(error) {
                 console.log(error);
