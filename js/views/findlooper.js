@@ -12,7 +12,8 @@ define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
     var View = Backbone.View.extend({
                 
         events: {
-            'click button': 'doSearch'
+            'click button': 'doSearch',
+            'click div#findlooper-results a': 'selectLooper'
         },
         
         searchterm: '',
@@ -41,6 +42,22 @@ define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
             }).catch(function(error) {
                 console.log(error);
             });
+        },
+        
+        removeResults: function() {
+            this.$el.find('div#findlooper-results').find('*').remove();
+        },
+        
+        selectLooper: function(ev) {
+            ev.preventDefault();
+            var looperId = $(ev.currentTarget).attr('data-looperid');
+            if (looperId) {
+                var looper = this.collection.findWhere({_id: looperId});
+                if (looper) {
+                    this.app.dispatcher.trigger('looper-selected', looper);
+                    this.removeResults();
+                }
+            }
         },
         
         initialize: function() {

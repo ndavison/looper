@@ -46,6 +46,11 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
             }
         },
         
+        removeAllLoops: function() {
+            this.stopLoops();
+            this.$el.find('button.loop-button').remove();
+        },
+        
         addSaveForm: function() {
             var view = this;
             if (view.$el.find('form#view-saveform').length == 0) {
@@ -72,23 +77,13 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
             var view = this;
             view.model.get('loops').forEach(function(loop) {
                 if (exceptThisLoop && exceptThisLoop.get('loopFileId') != loop.get('loopFileId') || !exceptThisLoop) {
-                    loop.audio.stop();
+                    if (loop.audio) {
+                        loop.audio.stop();
+                    }
                 }
             });
         },
-        
-        loadLooper: function(looper) {
-            /*if (looper) {
-                this.model = looper;
-                if (this.model.loops.length > 0) {
-                    for (var i = 0; i < this.model.loops.length; i++) {
-                        var loop = new Loop(this.model.loops[i].attributes);
-                        
-                    }
-                }
-            }*/
-        },
-        
+                
         saveLoops: function() {
             var view = this;
             var dropBoxDir = view.app.config.dropBoxDir;
@@ -178,12 +173,20 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
             this.model.get('loops').add(loop);
         },
         
-        createLoop: function(file) {
+        createLoop: function(params) {
             var self = this;
-            var fileMatches = file.name.match(/\.(.*)$/);
-            var fileExtension = fileMatches && fileMatches[1] ? fileMatches[1] : '';
-            var loop = new Loop({name: file.name, fileType: file.type, fileExtension: fileExtension});
-            loop.instantiateAudio({src: file.data})
+            var loop = new Loop({
+                name: params.name, 
+                fileType: params.fileType, 
+                fileExtension: params.fileExtension, 
+                loopFileId: params.loopFileId, 
+                dropboxURL: params.dropboxURL
+            });
+            if (!params.data && params.dropboxURL) {
+                params.data = params.dropboxURL;
+            }
+            return new RSVP.Promise(function(resolve, reject) {
+                loop.instantiateAudio({src: params.data})
                 .then(function(loop) {
                     loop.audio.setVolume(self.app.views.controls.getVolume());
                     loop.audio.setPitch(self.app.views.controls.getPitch());
@@ -191,12 +194,31 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
                     self.addLoopButton(loop).then(function() {
                         self.enableLoopButton(loop);
                         self.app.dispatcher.trigger('loop-loaded', loop);
+                        resolve(loop);
                     });
-                    console.log(loop);
-                })
-                .catch(function(error) {
-                    console.log(error);
                 });
+            });
+        },
+        
+        loadLooper: function(looper) {
+            var self = this;
+            if (looper) {
+                self.removeAllLoops();
+                self.model = looper;
+                if (self.model.get('loops').length > 0) {
+                    var promises = [];
+                    
+                    for (var i = 0; i < self.model.get('loops').length; i++) {
+                        promises.push(self.createLoop(self.model.get('loops')[i]));
+                    }
+                    
+                    self.model.set('loops', new Loops());
+                    RSVP.all(promises).catch(function(error) {
+                        console.log(error);
+                    });
+                }
+                
+            }
         },
                 
         initialize: function() {

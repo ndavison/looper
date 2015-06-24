@@ -3,7 +3,7 @@
 <% for (var i = 0; i < loopers.length; i++) { %>
 <% var looper = loopers[i]; %>
     <li class="list-group-item">
-        <h3><a href="#"><%- looper.get("name") %></a></h3>
+        <h3><a href="#" data-looperid="<%- looper.get("_id") %>"><%- looper.get("name") %></a></h3>
     </li>
 <% } %>
 <% } else { %>

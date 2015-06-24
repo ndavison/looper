@@ -7,7 +7,7 @@
 
 "use strict";
  
-define(['backbone'], function(Backbone) {
+define(['backbone', 'models/looper'], function(Backbone, Looper) {
     
     var Collection = Backbone.Collection.extend({
         
@@ -20,6 +20,8 @@ define(['backbone'], function(Backbone) {
         },
         
         searchterm: '',
+        
+        model: Looper,
         
         initialize: function() {}
         

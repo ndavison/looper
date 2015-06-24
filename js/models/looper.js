@@ -33,7 +33,11 @@ define(['backbone'], function(Backbone) {
             obj._id = response._id;
             obj.name = response.name;
             obj.userId = response.userId;
-            obj.loops = this.get('loops');
+            if (this.get('loops')) {
+                obj.loops = this.get('loops');
+            } else {
+                obj.loops = response.loops;
+            }
             return obj;
         }
         

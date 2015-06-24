@@ -44,7 +44,9 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
                 }
                 var reader = new FileReader();
                 reader.onload = function(ev) {
-                    view.app.dispatcher.trigger('file-read', {name: file.name, data: ev.target.result, type: file.type});
+                    var fileMatches = file.name.match(/\.(.*)$/);
+                    var fileExtension = fileMatches && fileMatches[1] ? fileMatches[1] : '';
+                    view.app.dispatcher.trigger('file-read', {name: file.name, data: ev.target.result, type: file.type, extension: fileExtension});
                 };
                 reader.onerror = function(error) {
                     console.log(error);
@@ -56,7 +58,6 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
         getFromDropbox: function(ev) {
             ev.preventDefault();
             var view = this;
-            
             Dropbox.appKey = view.app.config.dropboxDropinKey;
             Dropbox.choose({multiselect: true, linkType: 'direct', extensions: ['audio'], success: function(files) {
                 if (files.length > 0) {
