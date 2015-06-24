@@ -44,7 +44,7 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
                 }
                 var reader = new FileReader();
                 reader.onload = function(ev) {
-                    view.app.dispatcher.trigger('file-read', {name: file.name, data: ev.target.result});
+                    view.app.dispatcher.trigger('file-read', {name: file.name, data: ev.target.result, type: file.type});
                 };
                 reader.onerror = function(error) {
                     console.log(error);

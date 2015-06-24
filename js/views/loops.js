@@ -180,7 +180,9 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
         
         createLoop: function(file) {
             var self = this;
-            var loop = new Loop({name: file.name});
+            var fileMatches = file.name.match(/\.(.*)$/);
+            var fileExtension = fileMatches && fileMatches[1] ? fileMatches[1] : '';
+            var loop = new Loop({name: file.name, fileType: file.type, fileExtension: fileExtension});
             loop.instantiateAudio({src: file.data})
                 .then(function(loop) {
                     loop.audio.setVolume(self.app.views.controls.getVolume());
@@ -190,6 +192,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
                         self.enableLoopButton(loop);
                         self.app.dispatcher.trigger('loop-loaded', loop);
                     });
+                    console.log(loop);
                 })
                 .catch(function(error) {
                     console.log(error);
@@ -202,7 +205,6 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
             dispatcher.on('looper-selected', this.loadLooper, this);
             dispatcher.on('file-read', this.createLoop, this);
             dispatcher.on('loop-loaded', this.enableLoopButton, this);
-            //dispatcher.on('save-loops', this.saveLoops, this);
             dispatcher.on('change-volume', this.changeVolumes, this);
             dispatcher.on('change-pitch', this.changePitches, this);
             dispatcher.on('signed-in-user-info', this.setUserId, this);
