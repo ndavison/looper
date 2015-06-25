@@ -63,7 +63,9 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
                 if (files.length > 0) {
                     for (var i = 0; i < files.length; i++) {
                         var file = files[i];
-                        view.app.dispatcher.trigger('file-read', {name: file.name, data: file.link});
+                        var fileMatches = file.name.match(/\.(.*)$/);
+                        var fileExtension = fileMatches && fileMatches[1] ? fileMatches[1] : '';
+                        view.app.dispatcher.trigger('file-read', {name: file.name, dropboxURL: file.link, fileExtension: fileExtension});
                     }
                 }
             }});

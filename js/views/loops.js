@@ -102,7 +102,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
                         var loop = view.model.get('loops').models[i];
                         var fileName = loop.get('loopFileId') + '.' + loop.get('fileExtension');
                         if (loop.get('dropboxURL')) {
-                            view.app.dispatcher.trigger('status', '"' + fileName + '" already found in your Dropbox...');
+                            view.app.dispatcher.trigger('status', '"' + fileName + '" is already available from Dropbox...');
                         } else {
                             var data = loop.dataURItoBlob(loop.audio.get('src'));
                             if (data) {
@@ -178,13 +178,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
         
         createLoop: function(params) {
             var self = this;
-            var loop = new Loop({
-                name: params.name, 
-                fileType: params.fileType, 
-                fileExtension: params.fileExtension, 
-                loopFileId: params.loopFileId, 
-                dropboxURL: params.dropboxURL
-            });
+            var loop = new Loop(params);
             if (!params.data && params.dropboxURL) {
                 params.data = params.dropboxURL;
             }
