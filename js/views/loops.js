@@ -25,7 +25,6 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
             return new RSVP.Promise(function(resolve, reject) {
                 return view.getTemplate('/looper/views/playloop.html', {loopFileId: loop.get('loopFileId'), name: loop.get('name'), enabled: loop.audio ? true : false})
                 .then(function(res) {
-                    view.addSaveForm();
                     return view.show(res, view.$el.find('div#loops-buttons'), true);
                 }).then(function() {
                     resolve();
@@ -53,13 +52,17 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
         
         addSaveForm: function() {
             var view = this;
-            if (view.$el.find('form#view-saveform').length == 0) {
+            if (view.app.mode == 'create' && view.$el.find('div#loops-saveform form').length == 0) {
                 view.getTemplate('/looper/views/saveloops.html', {}).then(function(res) {
                     return view.show(res, view.$el.find('div#loops-saveform'), false);
                 }).catch(function(error) {
                     console.log(error);
                 });
             }
+        },
+        
+        removeSaveForm: function() {
+            this.$el.find('div#loops-saveform form').remove();
         },
         
         playLoop: function(ev) {
@@ -205,6 +208,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
             var self = this;
             if (looper) {
                 self.removeAllLoops();
+                self.removeSaveForm();
                 self.model = looper;
                 if (self.model.get('loops').length > 0) {
                     var promises = [];
@@ -228,6 +232,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
             dispatcher.on('looper-selected', this.loadLooper, this);
             dispatcher.on('file-read', this.createLoop, this);
             dispatcher.on('loop-loaded', this.enableLoopButton, this);
+            dispatcher.on('loop-loaded', this.addSaveForm, this);
             dispatcher.on('change-volume', this.changeVolumes, this);
             dispatcher.on('change-pitch', this.changePitches, this);
             dispatcher.on('signed-in-user-info', this.setUserId, this);

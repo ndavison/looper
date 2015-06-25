@@ -14,6 +14,11 @@ define(['config', 'extensions', 'backbone', 'underscore', 'models/dropbox', 'vie
         this.config = Config;
         this.views = {};
         this.models = {};
+        this.mode = 'create';
+        
+        /**
+         * A central event dispatcher.
+         */
         this.dispatcher = _.clone(Backbone.Events);
         this.dispatcher.on('all', function(eventName) {
             console.log(eventName + ' triggered');

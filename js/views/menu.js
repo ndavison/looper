@@ -44,11 +44,13 @@ define(['backbone'], function(Backbone) {
                 case 'createform':
                     this.$el.find('div#view-body').html(this.app.views.createform.$el);
                     this.app.views.createform.render();
+                    this.app.mode = 'create';
                     break;
                     
                 case 'findlooper':
                     this.$el.find('div#view-body').html(this.app.views.findlooper.$el);
                     this.app.views.findlooper.render();
+                    this.app.mode = 'find';
                     break;
             }
         },
