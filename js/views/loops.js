@@ -52,17 +52,20 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
         
         addSaveForm: function() {
             var view = this;
-            if (view.app.mode == 'create' && view.$el.find('div#loops-saveform form').length == 0) {
-                view.getTemplate('/looper/views/saveloops.html', {}).then(function(res) {
-                    return view.show(res, view.$el.find('div#loops-saveform'), false);
-                }).catch(function(error) {
-                    console.log(error);
-                });
+            if (view.app.mode == 'create' && view.model.get('loops').models.length > 0 && view.$el.find('div#loops-saveform form').length == 0) {
+                view.getTemplate('/looper/views/saveloops.html', {authenticated: view.app.models.dropBox.isAuthenticated()})
+                    .then(function(res) {
+                        return view.show(res, view.$el.find('div#loops-saveform'), false);
+                    }).catch(function(error) {
+                        console.log(error);
+                    });
             }
         },
         
         removeSaveForm: function() {
-            this.$el.find('div#loops-saveform form').remove();
+            if (this.$el.find('div#loops-saveform form').length > 0) {
+                this.$el.find('div#loops-saveform form').remove();
+            }
         },
         
         playLoop: function(ev) {
@@ -219,10 +222,17 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
                 
             }
         },
+        
+        authChange: function() {
+            this.removeSaveForm();
+            this.addSaveForm();
+        },
                 
         initialize: function() {
             this.model = new Looper({loops: new Loops()});
             var dispatcher = this.app.dispatcher;
+            dispatcher.on('signed-out', this.authChange, this);
+            dispatcher.on('signed-in', this.authChange, this);
             dispatcher.on('looper-selected', this.loadLooper, this);
             dispatcher.on('file-read', this.createLoop, this);
             dispatcher.on('loop-loaded', this.enableLoopButton, this);

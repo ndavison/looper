@@ -1,4 +1,5 @@
 <form>
+<% if (authenticated) { %>
     <div class="col-xs-6">
         <input type="text" class="form-control" name="looper-name" placeholder="Looper Name">
     </div>
@@ -7,4 +8,7 @@
             <span class="glyphicon glyphicon-cloud" aria-hidden="true"></span> Save Looper
         </button>
     </div>
+<% } else { %>
+    <p>You must be signed into Dropbox to save the looper!</p>
+<% } %>
 </form>

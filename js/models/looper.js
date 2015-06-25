@@ -21,10 +21,10 @@ define(['backbone'], function(Backbone) {
         
         /**
          * Override model#parse so the loops data coming back 
-         * doesn't clobber the Loops collection instance we 
-         * already have, since the Loop instances inside it maintain 
-         * a non-Backbone property for the audio data that we don't 
-         * want synced to our server.
+         * doesn't clobber the Loops collection instance already
+         * present, if relevant, since the Loop instances inside 
+         * it maintain a non-Backbone property for the audio data 
+         * that we don't want synced to our server.
          *
          * @param {Object} response - The response back from the server.
          */
