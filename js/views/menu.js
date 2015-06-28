@@ -53,6 +53,8 @@ define(['backbone'], function(Backbone) {
                     this.app.mode = 'find';
                     break;
             }
+            
+            this.app.dispatcher.trigger('menu-change', this.app.mode);
         },
                 
         initialize: function() {},

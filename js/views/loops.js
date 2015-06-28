@@ -227,12 +227,21 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
             this.removeSaveForm();
             this.addSaveForm();
         },
+        
+        menuChange: function(mode) {
+            if (mode == 'create') {
+                this.addSaveForm();
+            } else if (mode == 'find') {
+                this.removeSaveForm();
+            }
+        },
                 
         initialize: function() {
             this.model = new Looper({loops: new Loops()});
             var dispatcher = this.app.dispatcher;
             dispatcher.on('signed-out', this.authChange, this);
             dispatcher.on('signed-in', this.authChange, this);
+            dispatcher.on('menu-change', this.menuChange, this);
             dispatcher.on('looper-selected', this.loadLooper, this);
             dispatcher.on('file-read', this.createLoop, this);
             dispatcher.on('loop-loaded', this.enableLoopButton, this);
