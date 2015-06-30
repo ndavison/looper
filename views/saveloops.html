@@ -4,11 +4,13 @@
         <input type="text" class="form-control" name="looper-name" placeholder="Looper Name">
     </div>
     <div class="col-xs-3">
-        <button id="save-loops" type="button" class="btn btn-primary">
+        <button type="submit" id="save-loops" class="btn btn-primary">
             <span class="glyphicon glyphicon-cloud" aria-hidden="true"></span> Save Looper
         </button>
     </div>
 <% } else { %>
-    <p>You must be signed into Dropbox to save the looper!</p>
+    <div class="col-xs-12">
+        <p>You must be signed into Dropbox to save the looper!</p>
+    </div>
 <% } %>
 </form>

@@ -14,9 +14,9 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
         el: '#view-loops',
         
         events: {
-            'click button': 'playLoop',
-            'touchstart button': 'playLoop',
-            'click button#save-loops': 'saveLoops',
+            'click button.loop-button': 'playLoop',
+            'touchstart button.loop-button': 'playLoop',
+            'submit form': 'saveFormSubmit',
             'input input[name=looper-name]': 'setLooperName'
         },
         
@@ -88,6 +88,11 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
                     }
                 }
             });
+        },
+        
+        saveFormSubmit: function(ev) {
+            ev.preventDefault();
+            this.saveLoops();
         },
                 
         saveLoops: function() {
