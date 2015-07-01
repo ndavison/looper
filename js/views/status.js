@@ -28,7 +28,6 @@ define(['backbone'], function(Backbone) {
                 
         initialize: function() {
             this.app.dispatcher.on('status', this.addStatusMessage, this);
-            this.app.dispatcher.on('dropbox:status', this.addStatusMessage, this);
         },
         
         render: function() {}
