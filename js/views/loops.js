@@ -7,7 +7,7 @@
  
 "use strict"
 
-define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], function(Backbone, RSVP, Looper, Loops, Loop) {
+define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, RSVP, Looper, Loop) {
    
     var View = Backbone.View.extend({
         
@@ -20,23 +20,22 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
             'input input[name=looper-name]': 'setLooperName'
         },
         
-        addLoopButton: function(loop) {
+        addLoopButton: function(loopInfo) {
             var view = this;
             return new RSVP.Promise(function(resolve, reject) {
-                return view.getTemplate('/looper/views/playloop.html', {loopFileId: loop.get('loopFileId'), name: loop.get('name'), enabled: loop.audio ? true : false})
+                return view.getTemplate('/looper/views/playloop.html', {loopFileId: loopInfo.loopFileId, name: loopInfo.name, enabled: loopInfo.isReady ? true : false})
                 .then(function(res) {
                     return view.show(res, view.$el.find('div#loops-buttons'), true);
-                }).then(function() {
-                    resolve();
+                }).then(function(loopEl) {
+                    resolve(loopEl);
                 }).catch(function(error) {
-                    reject(error);
+                    reject(Error(error));
                 }); 
             });
         },
                 
-        enableLoopButton: function(loop) {
+        enableLoopButton: function(loopFileId) {
             var view = this;
-            var loopFileId = loop.get('loopFileId');
             if (loopFileId) {
                 if (view.$el.find('button[data-loopfileid=' + loopFileId + ']').length > 0) {
                     var el = view.$el.find('button[data-loopfileid=' + loopFileId + ']');
@@ -52,7 +51,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
         
         addSaveForm: function() {
             var view = this;
-            if (view.app.mode == 'create' && view.model.get('loops').models.length > 0 && view.$el.find('div#loops-saveform form').length == 0) {
+            if (view.app.mode == 'create' && view.model.get('loops').length > 0 && view.$el.find('div#loops-saveform form').length == 0) {
                 view.getTemplate('/looper/views/saveloops.html', {authenticated: view.app.models.dropBox.isAuthenticated()})
                     .then(function(res) {
                         return view.show(res, view.$el.find('div#loops-saveform'), false);
@@ -149,6 +148,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
                 })
                 .then(function() {
                     view.app.dispatcher.trigger('status', 'Done!');
+                    view.app.dispatcher.trigger('looper-saved', view.model);
                 })
                 .catch(function(error) {
                     console.log(error);
@@ -180,76 +180,92 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loops', 'models/loop'], fun
             }
         },
         
-        addLoopToCollection: function(loop) {
-            this.model.get('loops').add(loop);
-        },
-        
-        createLoop: function(params) {
+        loadLoops: function(loops) {
             var self = this;
-            var loop = new Loop(params);
-            if (!params.data && params.dropboxURL) {
-                params.data = params.dropboxURL;
+            
+            var promises = []
+            for (var i = 0; i < loops.length; i++) {
+                loops[i].loopFileId = loops[i].loopFileId || self.model.generateId();
+                var buttonInfo = {
+                    loopFileId: loops[i].loopFileId,
+                    name: loops[i].name,
+                    isReady: false
+                };
+                promises.push(self.addLoopButton(buttonInfo));
             }
-            return new RSVP.Promise(function(resolve) {
-                self.addLoopButton(loop)
-                    .then(function() {
-                        return loop.instantiateAudio({src: params.data})
-                    })
-                    .then(function(loop) {
-                        loop.audio.setVolume(self.app.views.controls.getVolume());
-                        loop.audio.setPitch(self.app.views.controls.getPitch());
-                        self.addLoopToCollection(loop);
-                        self.enableLoopButton(loop);
-                        self.app.dispatcher.trigger('loop-loaded', loop);
-                        resolve(loop);
-                    });
-            });
+            
+            return RSVP.all(promises)
+                .then(function() {
+                    return self.model.populateLoops(loops);
+                })
+                .then(function() {
+                    var loops = self.model.get('loops').models;
+                    for (var i = 0; i < loops.length; i++) {
+                        self.enableLoopButton(loops[i].get('loopFileId'));
+                        loops[i].audio.setVolume(self.app.views.controls.getVolume());
+                        loops[i].audio.setPitch(self.app.views.controls.getPitch());
+                        self.app.dispatcher.trigger('loop-loaded', loops[i]);
+                    }
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
         },
         
-        loadLooper: function(looper) {
+        loadLooperFromId: function(id) {
+            var self = this;
+            if (id) {
+                self.model.set('_id', id);
+                self.model.fetchWithPromise({})
+                    .then(function() {
+                        return self.loadLoops(self.model.get('loops'));
+                    })
+                    .then(function() {
+                        self.app.dispatcher.trigger('looper-loaded', self.model);
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+            }
+        },
+        
+        setLooper: function(looper) {
             var self = this;
             if (looper) {
                 self.removeAllLoops();
                 self.removeSaveForm();
-                self.model = looper;
-                if (self.model.get('loops').length > 0) {
-                    var promises = [];
-                    
-                    for (var i = 0; i < self.model.get('loops').length; i++) {
-                        promises.push(self.createLoop(self.model.get('loops')[i]));
-                    }
-                    
-                    self.model.set('loops', new Loops());
-                    RSVP.all(promises).catch(function(error) {
-                        console.log(error);
-                    });
-                }
-                
+                self.loadLooperFromId(looper.get('_id'));
             }
         },
         
-        authChange: function() {
+        onAuthChange: function() {
             this.removeSaveForm();
             this.addSaveForm();
         },
         
-        menuChange: function(mode) {
+        onMenuChange: function(mode) {
             if (mode == 'create') {
                 this.addSaveForm();
             } else if (mode == 'find') {
                 this.removeSaveForm();
             }
         },
+        
+        onLoopFileRead: function(params) {
+            this.loadLoops([params])
+                .catch(function(error) {
+                    console.log(error);
+                });
+        },
                 
         initialize: function() {
-            this.model = new Looper({loops: new Loops()});
+            this.model = new Looper();
             var dispatcher = this.app.dispatcher;
-            dispatcher.on('signed-out', this.authChange, this);
-            dispatcher.on('signed-in', this.authChange, this);
-            dispatcher.on('menu-change', this.menuChange, this);
-            dispatcher.on('looper-selected', this.loadLooper, this);
-            dispatcher.on('file-read', this.createLoop, this);
-            dispatcher.on('loop-loaded', this.enableLoopButton, this);
+            dispatcher.on('signed-out', this.onAuthChange, this);
+            dispatcher.on('signed-in', this.onAuthChange, this);
+            dispatcher.on('menu-change', this.onMenuChange, this);
+            dispatcher.on('looper-selected', this.setLooper, this);
+            dispatcher.on('file-read', this.onLoopFileRead, this);
             dispatcher.on('loop-loaded', this.addSaveForm, this);
             dispatcher.on('change-volume', this.changeVolumes, this);
             dispatcher.on('change-pitch', this.changePitches, this);

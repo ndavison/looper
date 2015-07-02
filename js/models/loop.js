@@ -45,16 +45,16 @@ define(['backbone', 'rsvp', 'Howler', 'models/audio'], function(Backbone, RSVP, 
             var self = this;
             return new RSVP.Promise(function(resolve, reject) {
                 self.audio = new Audio(options);
-                self.audio.loadAudio().then(function() {
-                    resolve(self);
-                });
+                self.audio.loadAudio()
+                    .then(function() {
+                        resolve(self);
+                    }).catch(function(error) {
+                        reject(Error(error));
+                    });
             });
         },
                         
         initialize: function() {
-            if (!this.get('loopFileId')) {
-                this.set('loopFileId', Math.random().toString(36).replace(/[^a-z]+/g, ''));
-            }
         }
         
     });

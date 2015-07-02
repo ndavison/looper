@@ -20,6 +20,7 @@ define(['backbone', 'jquery', 'rsvp'], function(Backbone, $, RSVP) {
             Backbone.View.prototype.app = app;
             Backbone.Model.prototype.app = app;
             Backbone.Collection.prototype.app = app;
+            Backbone.Router.prototype.app = app;
         
             /**
              * A store for template files to be cached.
@@ -79,7 +80,7 @@ define(['backbone', 'jquery', 'rsvp'], function(Backbone, $, RSVP) {
             };
             
             /**
-             * model#save as an RSVP Promise.
+             * Backbone.Model#save as an RSVP Promise.
              */
             Backbone.Model.prototype.saveWithPromise = function() {
                 var self = this;
@@ -98,9 +99,9 @@ define(['backbone', 'jquery', 'rsvp'], function(Backbone, $, RSVP) {
             };
             
             /**
-             * collection#fetch as an RSVP Promise.
+             * Backbone.Model#fetch as an RSVP Promise.
              */
-            Backbone.Collection.prototype.fetchWithPromise = function() {
+            var fetchWithPromise = function() {
                 var self = this;
                 var fetchArguments = arguments;
                 return new RSVP.Promise(function(resolve, reject) {
@@ -113,7 +114,8 @@ define(['backbone', 'jquery', 'rsvp'], function(Backbone, $, RSVP) {
                     Backbone.Collection.prototype.fetch.apply(self, fetchArguments);
                 });
             };
-            
+            Backbone.Model.prototype.fetchWithPromise = fetchWithPromise;
+            Backbone.Collection.prototype.fetchWithPromise = fetchWithPromise;
             
         }
         
