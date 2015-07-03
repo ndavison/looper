@@ -15,11 +15,13 @@ define(['backbone'], function(Backbone) {
         
         loadLooper: function(id) {
             this.app.views.loops.loadLooperFromId(id);
+            this.app.dispatcher.trigger('looper-routed');
         },
         
         navigateToLooper: function(looper) {
             if (looper.get('_id')) {
-                this.navigate('looper/' + looper.get('_id'));
+                var route = 'looper/' + looper.get('_id');
+                this.navigate(route);
             }
         },
         

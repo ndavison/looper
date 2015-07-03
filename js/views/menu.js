@@ -16,7 +16,9 @@ define(['backbone'], function(Backbone) {
         },
         
         activeDefault: function() {
-            this.$el.find('a[data-bodyview=createform]').click();
+            if (this.$el.find('.active').length == 0) {
+                this.$el.find('a[data-bodyview=createform]').click();
+            }
         },
         
         menuChange: function(ev) {
@@ -56,8 +58,14 @@ define(['backbone'], function(Backbone) {
             
             this.app.dispatcher.trigger('menu-change', this.app.mode);
         },
+        
+        onLooperRouted: function() {
+            this.$el.find('a[data-bodyview=findlooper]').click();
+        },
                 
-        initialize: function() {},
+        initialize: function() {
+            this.listenTo(this.app.dispatcher, 'looper-routed', this.onLooperRouted);
+        },
         
         render: function() {}
         
