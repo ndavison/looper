@@ -14,10 +14,10 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         el: '#view-loops',
         
         events: {
-            'click button.loop-button': 'playLoop',
-            'touchstart button.loop-button': 'playLoop',
+            'click button.loop-button': 'handleLoopButtonClick',
+            'touchstart button.loop-button': 'handleLoopButtonClick',
             'submit form': 'saveFormSubmit',
-            'input input[name=looper-name]': 'setLooperName'
+            'input input[name=looper-name]': 'handleLooperNameInput'
         },
         
         addLoopButton: function(loopInfo) {
@@ -67,7 +67,24 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
             }
         },
         
-        playLoop: function(ev) {
+        addCopyURLForm: function(url) {
+            var self = this;
+            return self.getTemplate('/looper/views/copyurl.html', {url: url})
+                .then(function(res) {
+                    return self.show(res, self.$el.find('div#looper-copyform'), false);
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+        },
+        
+        removeCopyURLForm: function() {
+            if (this.$el.find('div#looper-copyform form').length > 0) {
+                this.$el.find('div#looper-copyform form').remove();
+            }
+        },
+        
+        handleLoopButtonClick: function(ev) {
             ev.preventDefault();
             var target = ev.currentTarget;
             var loopFileId = $(target).attr('data-loopfileid');
@@ -173,7 +190,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
             }
         },
         
-        setLooperName: function() {
+        handleLooperNameInput: function() {
             var name = this.$el.find('input[name=looper-name]').val();
             if (name) {
                 this.model.set('name', name);
@@ -234,6 +251,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
             if (looper) {
                 self.removeAllLoops();
                 self.removeSaveForm();
+                self.removeCopyURLForm();
                 self.loadLooperFromId(looper.get('_id'));
             }
         },
@@ -248,6 +266,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                 this.addSaveForm();
             } else if (mode == 'find') {
                 this.removeSaveForm();
+                this.removeCopyURLForm();
             }
         },
         
@@ -257,6 +276,11 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                     console.log(error);
                 });
         },
+        
+        onLooperNavigated: function(url) {
+            this.addCopyURLForm(url);
+            this.removeSaveForm();
+        },
                 
         initialize: function() {
             this.model = new Looper();
@@ -265,6 +289,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
             dispatcher.on('signed-in', this.onAuthChange, this);
             dispatcher.on('menu-change', this.onMenuChange, this);
             dispatcher.on('looper-selected', this.setLooper, this);
+            dispatcher.on('looper-navigated', this.onLooperNavigated, this);
             dispatcher.on('file-read', this.onLoopFileRead, this);
             dispatcher.on('loop-loaded', this.addSaveForm, this);
             dispatcher.on('change-volume', this.changeVolumes, this);

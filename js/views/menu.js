@@ -59,12 +59,12 @@ define(['backbone'], function(Backbone) {
             this.app.dispatcher.trigger('menu-change', this.app.mode);
         },
         
-        onLooperRouted: function() {
+        onLooperFromURL: function() {
             this.$el.find('a[data-bodyview=findlooper]').click();
         },
                 
         initialize: function() {
-            this.listenTo(this.app.dispatcher, 'looper-routed', this.onLooperRouted);
+            this.listenTo(this.app.dispatcher, 'looper-from-url', this.onLooperFromURL);
         },
         
         render: function() {}
