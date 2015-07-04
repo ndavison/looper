@@ -14,9 +14,10 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         el: '#view-loops',
         
         events: {
+            'click input[name=looper-url]': 'handleShareURLClick',
             'click button.loop-button': 'handleLoopButtonClick',
             'touchstart button.loop-button': 'handleLoopButtonClick',
-            'submit form': 'saveFormSubmit',
+            'submit form#save-loops-form': 'saveFormSubmit',
             'input input[name=looper-name]': 'handleLooperNameInput'
         },
         
@@ -67,9 +68,9 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
             }
         },
         
-        addCopyURLForm: function(url) {
+        addShareURLForm: function(url) {
             var self = this;
-            return self.getTemplate('/looper/views/copyurl.html', {url: url})
+            return self.getTemplate('/looper/views/shareurl.html', {url: url})
                 .then(function(res) {
                     return self.show(res, self.$el.find('div#looper-copyform'), false);
                 })
@@ -78,10 +79,17 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                 });
         },
         
-        removeCopyURLForm: function() {
+        removeShareURLForm: function() {
             if (this.$el.find('div#looper-copyform form').length > 0) {
                 this.$el.find('div#looper-copyform form').remove();
             }
+        },
+        
+        handleShareURLClick: function(ev) {
+            ev.preventDefault();
+            var el = ev.currentTarget;
+            el.focus();
+            el.setSelectionRange(0, el.value.length);
         },
         
         handleLoopButtonClick: function(ev) {
@@ -251,7 +259,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
             if (looper) {
                 self.removeAllLoops();
                 self.removeSaveForm();
-                self.removeCopyURLForm();
+                self.removeShareURLForm();
                 self.loadLooperFromId(looper.get('_id'));
             }
         },
@@ -266,7 +274,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                 this.addSaveForm();
             } else if (mode == 'find') {
                 this.removeSaveForm();
-                this.removeCopyURLForm();
+                this.removeShareURLForm();
             }
         },
         
@@ -278,7 +286,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         },
         
         onLooperNavigated: function(url) {
-            this.addCopyURLForm(url);
+            this.addShareURLForm(url);
             this.removeSaveForm();
         },
                 
