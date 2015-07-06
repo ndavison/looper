@@ -24,3 +24,17 @@ p#signin-msg {
 button {
     cursor: pointer;
 }
+
+div#credit {
+    position: fixed;
+    padding: 12px;
+    bottom: 0px;
+    right: 0px;
+    opacity: 0.3;
+    transition: opacity 2s ease-out;
+}
+
+div#credit:hover {
+    opacity: 1;
+    transition: opacity 2s ease-out;
+}
