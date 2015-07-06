@@ -20,7 +20,7 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
             var view = this;
             if (view.$el.find('button#dropbox-loop').length == 0) {
                 view.getTemplate('/looper/views/loadfromdropbox.html').then(function(res) {
-                    return view.show(res, view.$el.find('div:last-child'), true);
+                    return view.show(res, view.$el.find('div#dropbox-button-area'), true);
                 }).catch(function(error) {
                     console.log(error);
                 });
