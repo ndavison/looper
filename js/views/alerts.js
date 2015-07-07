@@ -17,17 +17,21 @@ define(['backbone'], function(Backbone) {
             'click button.close': 'removeAlert'
         },
         
-        alertEl: null,
-        
         createAlert: function(msg, type) {
-            this.alertEl = $('<div></div>').addClass('alert alert-dismissible alert-' + type).html(msg + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>').hide();
-            this.$el.html(this.alertEl);
-            this.alertEl.fadeIn(200);          
+            var self = this;
+            self.getTemplate('/looper/views/alert.html', {msg: msg, type: type})
+                .then(function(res) {
+                    return self.show(res, self.$el);
+                })
+                .catch(function(error) {
+                    console.log(error);
+                })
+                ;
         },
         
         removeAlert: function(ev) {
             ev.preventDefault();
-            this.alertEl.fadeOut(300);
+            this.$el.html('');
         },
         
         initialize: function() {},
