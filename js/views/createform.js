@@ -18,9 +18,9 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
         
         addLoadFromDropboxButton: function() {
             var view = this;
-            if (view.$el.find('button#dropbox-loop').length == 0) {
+            if (view.$('button#dropbox-loop').length == 0) {
                 view.getTemplate('/looper/views/loadfromdropbox.html').then(function(res) {
-                    return view.show(res, view.$el.find('div#dropbox-button-area'), true);
+                    return view.show(res, view.$('div#dropbox-button-area'), true);
                 }).catch(function(error) {
                     console.log(error);
                 });
@@ -28,13 +28,13 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
         },
         
         removeLoadFromDropboxButton: function() {
-            this.$el.find('button#dropbox-loop').remove();
+            this.$('button#dropbox-loop').remove();
         },
         
         getFromFileReader: function(ev) {
             ev.preventDefault();
             var view = this;
-            var fileEl = this.$el.find('input[name="looper-file"]');
+            var fileEl = this.$('input[name="looper-file"]');
             
             for (var i = 0; i < fileEl[0].files.length; i++) {
                 var file = fileEl[0].files.item(i);

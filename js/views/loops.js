@@ -26,7 +26,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
             return new RSVP.Promise(function(resolve, reject) {
                 return view.getTemplate('/looper/views/playloop.html', {loopFileId: loopInfo.loopFileId, name: loopInfo.name, enabled: loopInfo.isReady ? true : false})
                 .then(function(res) {
-                    return view.show(res, view.$el.find('div#loops-buttons'), true);
+                    return view.show(res, view.$('div#loops-buttons'), true);
                 }).then(function(loopEl) {
                     resolve(loopEl);
                 }).catch(function(error) {
@@ -38,8 +38,8 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         enableLoopButton: function(loopFileId) {
             var view = this;
             if (loopFileId) {
-                if (view.$el.find('button[data-loopfileid=' + loopFileId + ']').length > 0) {
-                    var el = view.$el.find('button[data-loopfileid=' + loopFileId + ']');
+                if (view.$('button[data-loopfileid=' + loopFileId + ']').length > 0) {
+                    var el = view.$('button[data-loopfileid=' + loopFileId + ']');
                     el.removeAttr('disabled');
                 }
             }
@@ -47,15 +47,15 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         
         removeAllLoops: function() {
             this.stopLoops();
-            this.$el.find('button.loop-button').remove();
+            this.$('button.loop-button').remove();
         },
         
         addSaveForm: function() {
             var view = this;
-            if (view.app.mode == 'create' && view.model.get('loops').length > 0 && view.$el.find('div#loops-saveform form').length == 0) {
+            if (view.app.mode == 'create' && view.model.get('loops').length > 0 && view.$('div#loops-saveform form').length == 0) {
                 view.getTemplate('/looper/views/saveloops.html', {authenticated: view.app.models.dropBox.isAuthenticated()})
                     .then(function(res) {
-                        return view.show(res, view.$el.find('div#loops-saveform'), false);
+                        return view.show(res, view.$('div#loops-saveform'), false);
                     }).catch(function(error) {
                         console.log(error);
                     });
@@ -63,8 +63,8 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         },
         
         removeSaveForm: function() {
-            if (this.$el.find('div#loops-saveform form').length > 0) {
-                this.$el.find('div#loops-saveform form').remove();
+            if (this.$('div#loops-saveform form').length > 0) {
+                this.$('div#loops-saveform form').remove();
             }
         },
         
@@ -72,7 +72,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
             var self = this;
             return self.getTemplate('/looper/views/shareurl.html', {url: url})
                 .then(function(res) {
-                    return self.show(res, self.$el.find('div#looper-copyform'), false);
+                    return self.show(res, self.$('div#looper-copyform'), false);
                 })
                 .catch(function(error) {
                     console.log(error);
@@ -80,8 +80,8 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         },
         
         removeShareURLForm: function() {
-            if (this.$el.find('div#looper-copyform form').length > 0) {
-                this.$el.find('div#looper-copyform form').remove();
+            if (this.$('div#looper-copyform form').length > 0) {
+                this.$('div#looper-copyform form').remove();
             }
         },
         
@@ -199,7 +199,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         },
         
         handleLooperNameInput: function() {
-            var name = this.$el.find('input[name=looper-name]').val();
+            var name = this.$('input[name=looper-name]').val();
             if (name) {
                 this.model.set('name', name);
             }

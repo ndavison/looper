@@ -16,8 +16,8 @@ define(['backbone'], function(Backbone) {
         },
         
         activeDefault: function() {
-            if (this.$el.find('.active').length == 0) {
-                this.$el.find('a[data-bodyview=createform]').click();
+            if (this.$('.active').length == 0) {
+                this.$('a[data-bodyview=createform]').click();
             }
         },
         
@@ -27,7 +27,7 @@ define(['backbone'], function(Backbone) {
             var el = $(ev.currentTarget);
                         
             var targetView = el.attr('data-bodyview');
-            var currentView = this.$el.find('li.active a').attr('data-bodyview');
+            var currentView = this.$('li.active a').attr('data-bodyview');
 
             if (currentView && currentView != targetView || !currentView) {
                 this.changeBody(targetView);
@@ -37,20 +37,20 @@ define(['backbone'], function(Backbone) {
         },
         
         changeActive: function(el) {
-            this.$el.find('li').removeClass('active');
+            this.$('li').removeClass('active');
             el.addClass('active');
         },
         
         changeBody: function(bodyView) {
             switch(bodyView) {
                 case 'createform':
-                    this.$el.find('div#view-body').html(this.app.views.createform.$el);
+                    this.$('div#view-body').html(this.app.views.createform.$el);
                     this.app.views.createform.render();
                     this.app.mode = 'create';
                     break;
                     
                 case 'findlooper':
-                    this.$el.find('div#view-body').html(this.app.views.findlooper.$el);
+                    this.$('div#view-body').html(this.app.views.findlooper.$el);
                     this.app.views.findlooper.render();
                     this.app.mode = 'find';
                     break;
@@ -60,7 +60,7 @@ define(['backbone'], function(Backbone) {
         },
         
         onLooperFromURL: function() {
-            this.$el.find('a[data-bodyview=findlooper]').click();
+            this.$('a[data-bodyview=findlooper]').click();
         },
                 
         initialize: function() {

@@ -50,16 +50,16 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
         
         signedIn: function() {
             var view = this;
-            if (view.$el.find('button#auth-btn').length > 0) {
-                view.$el.find('button#auth-btn').remove();
+            if (view.$('button#auth-btn').length > 0) {
+                view.$('button#auth-btn').remove();
             }
             view.app.models.dropBox.getAccountInfo().then(function(info) {
                 return view.getTemplate('/looper/views/signout.html', {})
                     .then(function(res) {
                         var promises = [
-                            view.show(res, view.$el.find('#navbar-buttons'), true),
+                            view.show(res, view.$('#navbar-buttons'), true),
                             view.getTemplate('/looper/views/signinmsg.html', {name: info.name}).then(function(res) {
-                                return view.show(res, view.$el.find('#navbar-buttons'), true);
+                                return view.show(res, view.$('#navbar-buttons'), true);
                             })
                         ];
                         return RSVP.all(promises);
@@ -71,12 +71,12 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
         
         signedOut: function() {
             var view = this;
-            if (view.$el.find('button#signout-btn').length > 0) {
-                view.$el.find('p#signin-msg').remove();
-                view.$el.find('button#signout-btn').remove();
+            if (view.$('button#signout-btn').length > 0) {
+                view.$('p#signin-msg').remove();
+                view.$('button#signout-btn').remove();
             }
             view.getTemplate('/looper/views/signin.html', {}).then(function(res) {
-                return view.show(res, view.$el.find('#navbar-buttons'), true);
+                return view.show(res, view.$('#navbar-buttons'), true);
             }).catch(function(error) {
                 console.log(error);
             });

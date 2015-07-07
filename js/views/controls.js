@@ -27,11 +27,11 @@ define(['backbone'], function(Backbone) {
         },
         
         getVolume: function() {
-            return (this.$el.find('input[name=loopers-volume]').val() / 100);
+            return (this.$('input[name=loopers-volume]').val() / 100);
         },
         
         getPitch: function() {
-            return (this.$el.find('input[name=loopers-pitch]').val() / 100);
+            return (this.$('input[name=loopers-pitch]').val() / 100);
         },
         
         initialize: function() {
@@ -44,8 +44,8 @@ define(['backbone'], function(Backbone) {
         
         render: function() {
             var view = this;
-            if (view.$el.find('input[name=loopers-volume]').length == 0 &&
-                view.$el.find('input[name=loopers-pitch]').length == 0
+            if (view.$('input[name=loopers-volume]').length == 0 &&
+                view.$('input[name=loopers-pitch]').length == 0
             ) {
                 view.getTemplate('/looper/views/controls.html', {volume: view.defaultValues.volume, pitch: view.defaultValues.pitch})
                     .then(function(res) {

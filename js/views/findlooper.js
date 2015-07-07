@@ -21,7 +21,7 @@ define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
         doSearch: function(ev) {
             ev.preventDefault();
             var self = this;
-            var term = this.$el.find('input[name=looper-searchterm]').val();
+            var term = this.$('input[name=looper-searchterm]').val();
             if (term) {
                 this.searchterm = term;
                 this.collection.searchterm = term;
@@ -38,14 +38,14 @@ define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
         showResults: function() {
             var self = this;
             self.getTemplate('/looper/views/findlooper-results.html', {loopers: self.collection.models}).then(function(response) {
-                return self.show(response, self.$el.find('div#findlooper-results'));
+                return self.show(response, self.$('div#findlooper-results'));
             }).catch(function(error) {
                 console.log(error);
             });
         },
         
         removeResults: function() {
-            this.$el.find('div#findlooper-results').find('*').remove();
+            this.$('div#findlooper-results').find('*').remove();
         },
         
         selectLooper: function(ev) {
