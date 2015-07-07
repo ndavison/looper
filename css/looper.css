@@ -7,7 +7,8 @@ div.row {
 }
 
 .navbar-inverse {
-    background-image: linear-gradient(to bottom, #422664 0px, #180e25 100%)
+    background-image: none;
+    background-color: #32194E;
 }
 
 div#view-loops button {
