@@ -83,8 +83,8 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
         },
                 
         initialize: function() {
-            this.app.dispatcher.on('signed-in', this.signedIn, this);;
-            this.app.dispatcher.on('signed-out', this.signedOut, this);
+            this.listenTo(this.app.dispatcher, 'signed-in', this.signedIn);
+            this.listenTo(this.app.dispatcher, 'signed-out', this.signedOut);
         },
         
         render: function() {}

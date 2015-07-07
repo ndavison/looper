@@ -35,7 +35,7 @@ define(['backbone'], function(Backbone) {
         },
         
         initialize: function() {
-            this.app.dispatcher.on('loop-loaded', this.render, this);
+            this.listenTo(this.app.dispatcher, 'loop-loaded', this.render);
             this.defaultValues = {
                 volume: 100,
                 pitch: 100

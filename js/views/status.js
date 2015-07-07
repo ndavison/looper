@@ -27,7 +27,7 @@ define(['backbone'], function(Backbone) {
         },
                 
         initialize: function() {
-            this.app.dispatcher.on('status', this.addStatusMessage, this);
+            this.listenTo(this.app.dispatcher, 'status', this.addStatusMessage);
         },
         
         render: function() {}

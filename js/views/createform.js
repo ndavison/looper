@@ -72,8 +72,8 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
         },
         
         initialize: function() {
-            this.app.dispatcher.on('signed-in', this.addLoadFromDropboxButton, this);
-            this.app.dispatcher.on('signed-out', this.removeLoadFromDropboxButton, this);
+            this.listenTo(this.app.dispatcher, 'signed-in', this.addLoadFromDropboxButton);
+            this.listenTo(this.app.dispatcher, 'signed-out', this.removeLoadFromDropboxButton);
         },
         
         render: function() {

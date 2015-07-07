@@ -292,17 +292,16 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                 
         initialize: function() {
             this.model = new Looper();
-            var dispatcher = this.app.dispatcher;
-            dispatcher.on('signed-out', this.onAuthChange, this);
-            dispatcher.on('signed-in', this.onAuthChange, this);
-            dispatcher.on('menu-change', this.onMenuChange, this);
-            dispatcher.on('looper-selected', this.setLooper, this);
-            dispatcher.on('looper-navigated', this.onLooperNavigated, this);
-            dispatcher.on('file-read', this.onLoopFileRead, this);
-            dispatcher.on('loop-loaded', this.addSaveForm, this);
-            dispatcher.on('change-volume', this.changeVolumes, this);
-            dispatcher.on('change-pitch', this.changePitches, this);
-            dispatcher.on('signed-in-user-info', this.setUserId, this);
+            this.listenTo(this.app.dispatcher, 'signed-out', this.onAuthChange);
+            this.listenTo(this.app.dispatcher, 'signed-in', this.onAuthChange);
+            this.listenTo(this.app.dispatcher, 'menu-change', this.onMenuChange);
+            this.listenTo(this.app.dispatcher, 'looper-selected', this.setLooper);
+            this.listenTo(this.app.dispatcher, 'looper-navigated', this.onLooperNavigated);
+            this.listenTo(this.app.dispatcher, 'file-read', this.onLoopFileRead);
+            this.listenTo(this.app.dispatcher, 'loop-loaded', this.addSaveForm);
+            this.listenTo(this.app.dispatcher, 'change-volume', this.changeVolumes);
+            this.listenTo(this.app.dispatcher, 'change-pitch', this.changePitches);
+            this.listenTo(this.app.dispatcher, 'signed-in-user-info', this.setUserId);
         },
         
         render: function() {}
