@@ -37,13 +37,14 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
             var fileEl = this.$('input[name="looper-file"]');
             
             for (var i = 0; i < fileEl[0].files.length; i++) {
-                var file = fileEl[0].files.item(i);
+                var file = fileEl[0].files[i];
                 if (!file.type.match(/^(audio\/(mpeg|wav|)|video\/ogg)/)) {
                     view.app.views.alerts.createAlert('The file ' + file.name + ' was not an audio file! supported formats include WAV, MP3 and OGG.', 'danger');
                     continue;
                 }
                 var reader = new FileReader();
                 reader.onload = function(ev) {
+                    var file = this.file;
                     var fileMatches = file.name.match(/\.(.*)$/);
                     var fileExtension = fileMatches && fileMatches[1] ? fileMatches[1] : '';
                     view.app.dispatcher.trigger('file-read', {name: file.name, data: ev.target.result, fileType: file.type, fileExtension: fileExtension});
@@ -51,6 +52,7 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
                 reader.onerror = function(error) {
                     console.log(error);
                 };
+                reader.file = file;
                 reader.readAsDataURL(file);
             }
         },
