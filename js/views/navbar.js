@@ -14,13 +14,22 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
         el: '#view-navbar',
                 
         events: {
-            'click button#auth-btn': 'auth',
-            'click button#signout-btn': 'signOut',
+            'click button#auth-btn': 'handleAuthClick',
+            'click button#signout-btn': 'handleSignOutClick',
         },
         
-        auth: function(ev) {
-            var view = this;
+        handleAuthClick: function(ev) {
             ev.preventDefault();
+            this.auth();
+        },
+        
+        handleSignOutClick: function(ev) {
+            ev.preventDefault();
+            this.signOut();
+        },
+        
+        auth: function() {
+            var view = this;
             view.app.models.dropBox.auth().then(function(success) {
                 if (success) {
                     view.app.dispatcher.trigger('signed-in');
@@ -34,57 +43,58 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
                     view.app.dispatcher.trigger('signed-in-user-info', accountInfo);
                 }
             }).catch(function(error) {
-                console.log(error);
+                view.app.views.alerts.createAlert('There was a problem with authentication. It could be that Dropbox is experiencing issues. Please try again.', 'danger');
             });
         },
         
-        signOut: function(ev) {
+        signOut: function() {
             var view = this;
-            ev.preventDefault();
             this.app.models.dropBox.signOut().then(function() {
                 view.app.dispatcher.trigger('signed-out');
             }).catch(function(error) {
-                console.log(error);
+                view.app.views.alerts.createAlert('There was a problem with signing you out. It could be that Dropbox is experiencing issues. Please try again (or consider deleting your dropbox.com cookies if you really want to sign out).', 'danger');
             });;
         },
         
-        signedIn: function() {
+        onSignedIn: function() {
             var view = this;
             if (view.$('button#auth-btn').length > 0) {
                 view.$('button#auth-btn').remove();
             }
-            view.app.models.dropBox.getAccountInfo().then(function(info) {
-                return view.getTemplate('/looper/views/signout.html', {})
-                    .then(function(res) {
-                        var promises = [
-                            view.show(res, view.$('#navbar-buttons'), true),
-                            view.getTemplate('/looper/views/signinmsg.html', {name: info.name}).then(function(res) {
-                                return view.show(res, view.$('#navbar-buttons'), true);
-                            })
-                        ];
-                        return RSVP.all(promises);
-                    });
-            }).catch(function(error) {
-                console.log(error);
-            });
+            view.app.models.dropBox.getAccountInfo()
+                .then(function(info) {
+                    return view.getTemplate('/looper/views/signout.html', {})
+                        .then(function(res) {
+                            var promises = [
+                                view.show(res, view.$('#navbar-buttons'), true),
+                                view.getTemplate('/looper/views/signinmsg.html', {name: info.name}).then(function(res) {
+                                    return view.show(res, view.$('#navbar-buttons'), true);
+                                })
+                            ];
+                            return RSVP.all(promises);
+                        });
+                }).catch(function(error) {
+                    view.app.views.alerts.createAlert('There was a problem with gathering your user account information from Dropbox. Please try refreshing the page and trying again.', 'danger');
+                });
         },
         
-        signedOut: function() {
+        onSignedOut: function() {
             var view = this;
             if (view.$('button#signout-btn').length > 0) {
                 view.$('p#signin-msg').remove();
                 view.$('button#signout-btn').remove();
             }
-            view.getTemplate('/looper/views/signin.html', {}).then(function(res) {
-                return view.show(res, view.$('#navbar-buttons'), true);
-            }).catch(function(error) {
-                console.log(error);
-            });
+            view.getTemplate('/looper/views/signin.html', {})
+                .then(function(res) {
+                    return view.show(res, view.$('#navbar-buttons'), true);
+                }).catch(function(error) {
+                    console.log(error);
+                });
         },
                 
         initialize: function() {
-            this.listenTo(this.app.dispatcher, 'signed-in', this.signedIn);
-            this.listenTo(this.app.dispatcher, 'signed-out', this.signedOut);
+            this.listenTo(this.app.dispatcher, 'signed-in', this.onSignedIn);
+            this.listenTo(this.app.dispatcher, 'signed-out', this.onSignedOut);
         },
         
         render: function() {}
