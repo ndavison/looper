@@ -11,7 +11,7 @@ define(['config', 'extensions', 'backbone', 'underscore', 'router', 'models/drop
     
     var App = function() {
         
-        this.config = Config;
+        this.config = new Config();
         this.views = {};
         this.models = {};
         this.mode = 'create';

@@ -9,19 +9,19 @@
  
 define(function() {
     
-    var config = {
+    var Config = function() {
         
-        siteRoot: '/looper',
+        this.siteRoot = '/looper';
         
-        dropBoxDir: 'looper-audio',
+        this.dropBoxDir = 'looper-audio';
         
-        dropboxAPIKey: 'zr16qymzqg21hzf',
+        this.dropboxAPIKey = 'zr16qymzqg21hzf';
         
-        dropboxDropinKey: '3oyl33j84sk1elk',
+        this.dropboxDropinKey = '3oyl33j84sk1elk';
         
-        oAuthReceiverURL: 'https://' + window.location.hostname + '/looper/dropbox-receiver.html'
+        this.oAuthReceiverURL = 'https://' + window.location.hostname + this.siteRoot + '/dropbox-receiver.html';
         
     };
     
-    return config;
+    return Config;
 }); 
