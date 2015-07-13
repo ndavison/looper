@@ -5,8 +5,6 @@
  *
  */
 
-"use strict";
- 
 requirejs.config({
     baseUrl: '/looper/js',
     paths: {

@@ -5,9 +5,9 @@
  *
  */
 
-"use strict"
- 
 define(['backbone', 'rsvp', 'dropbox'], function(Backbone, RSVP, Dropbox) {
+
+    "use strict";
     
     var Model = Backbone.Model.extend({
                 

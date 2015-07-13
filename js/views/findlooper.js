@@ -5,9 +5,9 @@
  *
  */
 
-"use strict";
- 
 define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
+
+    "use strict";
     
     var View = Backbone.View.extend({
                 

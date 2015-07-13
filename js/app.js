@@ -5,9 +5,9 @@
  *
  */
 
-"use strict"
- 
 define(['config', 'extensions', 'backbone', 'underscore', 'router', 'models/dropbox', 'views/alerts', 'views/navbar', 'views/menu', 'views/createform', 'views/findlooper', 'views/controls', 'views/loops', 'views/status'], function(Config, Extensions, Backbone, _, Router, Dropbox, AlertsView, NavBarView, MenuView, CreateFormView, FindLooperView, ControlsView, LoopsView, StatusView) {
+
+    "use strict";
     
     var App = function() {
         

@@ -5,9 +5,9 @@
  *
  */
 
-"use strict";
- 
 define(['backbone', 'models/looper'], function(Backbone, Looper) {
+
+    "use strict";
     
     var Collection = Backbone.Collection.extend({
         

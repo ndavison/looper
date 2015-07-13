@@ -6,6 +6,8 @@
  */
 
 define(['backbone', 'jquery', 'rsvp'], function(Backbone, $, RSVP) {
+
+    "use strict";
     
     var Extensions = function() {
         

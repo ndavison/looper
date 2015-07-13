@@ -5,9 +5,9 @@
  *
  */
  
-"use strict"
-
 define(['backbone', 'rsvp', 'Howler', 'models/audio'], function(Backbone, RSVP, Howl, Audio) {
+
+    "use strict";
     
     var Model = Backbone.Model.extend({
         

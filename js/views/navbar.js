@@ -5,9 +5,9 @@
  *
  */
  
-"use strict"
-
 define(['backbone', 'rsvp'], function(Backbone, RSVP) {
+
+    "use strict";
     
     var View = Backbone.View.extend({
         

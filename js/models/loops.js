@@ -4,10 +4,10 @@
  *
  *
  */
-
-"use strict"
  
 define(['backbone', 'models/loop'], function(Backbone, Loop) {
+
+    "use strict";
     
     var Collection = Backbone.Collection.extend({
         

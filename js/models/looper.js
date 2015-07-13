@@ -6,6 +6,8 @@
  */
 
 define(['backbone', 'rsvp', 'models/loops', 'models/loop'], function(Backbone, RSVP, Loops, Loop) {
+
+    "use strict";
     
     var Model = Backbone.Model.extend({
         
