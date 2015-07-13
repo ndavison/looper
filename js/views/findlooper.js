@@ -30,7 +30,7 @@ define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
                         self.showResults();
                     })
                     .catch(function(error) {
-                        console.log(error);
+                        self.app.views.alerts.createAlert('There was a problem contacting the server - please try again later.', 'danger');
                     });
             }
         },
@@ -40,7 +40,7 @@ define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
             self.getTemplate('/looper/views/findlooper-results.html', {loopers: self.collection.models}).then(function(response) {
                 return self.show(response, self.$('div#findlooper-results'));
             }).catch(function(error) {
-                console.log(error);
+                self.app.views.alerts.createAlert('Failed to load the search results template.', 'danger');
             });
         },
         
@@ -71,7 +71,7 @@ define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
                 self.delegateEvents();
             })
             .catch(function(error) {
-                console.log(error);
+                self.app.views.alerts.createAlert('Failed to load the find looper form template.', 'danger');
             });
         }
         

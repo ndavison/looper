@@ -17,12 +17,12 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
         },
         
         addLoadFromDropboxButton: function() {
-            var view = this;
-            if (view.$('button#dropbox-loop').length == 0) {
-                view.getTemplate('/looper/views/loadfromdropbox.html').then(function(res) {
-                    return view.show(res, view.$('div#dropbox-button-area'), true);
+            var self = this;
+            if (self.$('button#dropbox-loop').length == 0) {
+                self.getTemplate('/looper/views/loadfromdropbox.html').then(function(res) {
+                    return self.show(res, self.$('div#dropbox-button-area'), true);
                 }).catch(function(error) {
-                    console.log(error);
+                    self.app.views.alerts.createAlert('Failed to read file - please try again.', 'danger');
                 });
             }
         },
@@ -33,13 +33,13 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
         
         getFromFileReader: function(ev) {
             ev.preventDefault();
-            var view = this;
+            var self = this;
             var fileEl = this.$('input[name="looper-file"]');
             
             for (var i = 0; i < fileEl[0].files.length; i++) {
                 var file = fileEl[0].files[i];
                 if (!file.type.match(/^(audio\/(mpeg|wav|)|video\/ogg)/)) {
-                    view.app.views.alerts.createAlert('The file ' + file.name + ' was not an audio file! supported formats include WAV, MP3 and OGG.', 'danger');
+                    self.app.views.alerts.createAlert('The file ' + file.name + ' was not an audio file! supported formats include WAV, MP3 and OGG.', 'danger');
                     continue;
                 }
                 var reader = new FileReader();
@@ -47,10 +47,10 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
                     var file = this.file;
                     var fileMatches = file.name.match(/\.(.*)$/);
                     var fileExtension = fileMatches && fileMatches[1] ? fileMatches[1] : '';
-                    view.app.dispatcher.trigger('file-read', {name: file.name, data: ev.target.result, fileType: file.type, fileExtension: fileExtension});
+                    self.app.dispatcher.trigger('file-read', {name: file.name, data: ev.target.result, fileType: file.type, fileExtension: fileExtension});
                 };
                 reader.onerror = function(error) {
-                    console.log(error);
+                    self.app.views.alerts.createAlert('Failed to read file - please try again.', 'danger');
                 };
                 reader.file = file;
                 reader.readAsDataURL(file);
@@ -59,15 +59,15 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
         
         getFromDropbox: function(ev) {
             ev.preventDefault();
-            var view = this;
-            Dropbox.appKey = view.app.config.dropboxDropinKey;
+            var self = this;
+            Dropbox.appKey = self.app.config.dropboxDropinKey;
             Dropbox.choose({multiselect: true, linkType: 'direct', extensions: ['audio'], success: function(files) {
                 if (files.length > 0) {
                     for (var i = 0; i < files.length; i++) {
                         var file = files[i];
                         var fileMatches = file.name.match(/\.(.*)$/);
                         var fileExtension = fileMatches && fileMatches[1] ? fileMatches[1] : '';
-                        view.app.dispatcher.trigger('file-read', {name: file.name, dropboxURL: file.link, fileExtension: fileExtension});
+                        self.app.dispatcher.trigger('file-read', {name: file.name, dropboxURL: file.link, fileExtension: fileExtension});
                     }
                 }
             }});
@@ -88,7 +88,7 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
                     self.addLoadFromDropboxButton();
                 }
             }).catch(function(error) {
-                console.log(error);
+                self.app.views.alerts.createAlert('Failed to load the create looper form.', 'danger');
             });
         }
         

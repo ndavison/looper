@@ -43,9 +43,7 @@ define(['backbone', 'rsvp', 'models/loops', 'models/loop'], function(Backbone, R
                 params.data = params.dropboxURL;
             }
             
-            return loop.instantiateAudio({src: params.data}).catch(function(error) {
-                console.log(error);
-            });
+            return loop.instantiateAudio({src: params.data});
         },
         
         /**

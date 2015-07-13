@@ -43,15 +43,15 @@ define(['backbone'], function(Backbone) {
         },
         
         render: function() {
-            var view = this;
-            if (view.$('input[name=loopers-volume]').length == 0 &&
-                view.$('input[name=loopers-pitch]').length == 0
+            var self = this;
+            if (self.$('input[name=loopers-volume]').length == 0 &&
+                self.$('input[name=loopers-pitch]').length == 0
             ) {
-                view.getTemplate('/looper/views/controls.html', {volume: view.defaultValues.volume, pitch: view.defaultValues.pitch})
+                self.getTemplate('/looper/views/controls.html', {volume: self.defaultValues.volume, pitch: self.defaultValues.pitch})
                     .then(function(res) {
-                        return view.show(res);
+                        return self.show(res);
                     }).catch(function(error) {
-                        console.log(error);
+                        self.app.views.alerts.createAlert('Failed to load the playback controls template.', 'danger');
                     });
             }
         }

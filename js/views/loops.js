@@ -22,11 +22,11 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         },
         
         addLoopButton: function(loopInfo) {
-            var view = this;
+            var self = this;
             return new RSVP.Promise(function(resolve, reject) {
-                return view.getTemplate('/looper/views/playloop.html', {loopFileId: loopInfo.loopFileId, name: loopInfo.name, enabled: loopInfo.isReady ? true : false})
+                return self.getTemplate('/looper/views/playloop.html', {loopFileId: loopInfo.loopFileId, name: loopInfo.name, enabled: loopInfo.isReady ? true : false})
                 .then(function(res) {
-                    return view.show(res, view.$('div#loops-buttons'), true);
+                    return self.show(res, self.$('div#loops-buttons'), true);
                 }).then(function(loopEl) {
                     resolve(loopEl);
                 }).catch(function(error) {
@@ -36,10 +36,10 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         },
                 
         enableLoopButton: function(loopFileId) {
-            var view = this;
+            var self = this;
             if (loopFileId) {
-                if (view.$('button[data-loopfileid=' + loopFileId + ']').length > 0) {
-                    var el = view.$('button[data-loopfileid=' + loopFileId + ']');
+                if (self.$('button[data-loopfileid=' + loopFileId + ']').length > 0) {
+                    var el = self.$('button[data-loopfileid=' + loopFileId + ']');
                     el.removeAttr('disabled');
                 }
             }
@@ -51,13 +51,13 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         },
         
         addSaveForm: function() {
-            var view = this;
-            if (view.app.mode == 'create' && view.model.get('loops').length > 0 && view.$('div#loops-saveform form').length == 0) {
-                view.getTemplate('/looper/views/saveloops.html', {authenticated: view.app.models.dropBox.isAuthenticated()})
+            var self = this;
+            if (self.app.mode == 'create' && self.model.get('loops').length > 0 && self.$('div#loops-saveform form').length == 0) {
+                self.getTemplate('/looper/views/saveloops.html', {authenticated: self.app.models.dropBox.isAuthenticated()})
                     .then(function(res) {
-                        return view.show(res, view.$('div#loops-saveform'), false);
+                        return self.show(res, self.$('div#loops-saveform'), false);
                     }).catch(function(error) {
-                        console.log(error);
+                        self.app.views.alerts.createAlert('Failed to load the save looper form template.', 'danger');
                     });
             }
         },
@@ -75,7 +75,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                     return self.show(res, self.$('div#looper-copyform'), false);
                 })
                 .catch(function(error) {
-                    console.log(error);
+                    self.app.views.alerts.createAlert('Failed to load the share URL template.', 'danger');
                 });
         },
         
@@ -104,8 +104,8 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         },
         
         stopLoops: function(exceptThisLoop) {
-            var view = this;
-            view.model.get('loops').forEach(function(loop) {
+            var self = this;
+            self.model.get('loops').forEach(function(loop) {
                 if (exceptThisLoop && exceptThisLoop.get('loopFileId') != loop.get('loopFileId') || !exceptThisLoop) {
                     if (loop.audio) {
                         loop.audio.stop();
@@ -120,26 +120,26 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         },
                 
         saveLoops: function() {
-            var view = this;
-            var dropBoxDir = view.app.config.dropBoxDir;
+            var self = this;
+            var dropBoxDir = self.app.config.dropBoxDir;
             
-            view.app.models.dropBox.dirExists(dropBoxDir)
+            self.app.models.dropBox.dirExists(dropBoxDir)
                 .then(function(exists) {
-                    view.app.dispatcher.trigger('status', 'Preparing your Dropbox...');
-                    return exists ? null : view.app.models.dropBox.makeDir(dropBoxDir);                    
+                    self.app.dispatcher.trigger('status', 'Preparing your Dropbox...');
+                    return exists ? null : self.app.models.dropBox.makeDir(dropBoxDir);                    
                 })
                 .then(function() { 
                     var promises = [];
-                    for (var i = 0; i < view.model.get('loops').models.length; i++) {
-                        var loop = view.model.get('loops').models[i];
+                    for (var i = 0; i < self.model.get('loops').models.length; i++) {
+                        var loop = self.model.get('loops').models[i];
                         var fileName = loop.get('loopFileId') + '.' + loop.get('fileExtension');
                         if (loop.get('dropboxURL')) {
-                            view.app.dispatcher.trigger('status', '"' + fileName + '" is already available from Dropbox...');
+                            self.app.dispatcher.trigger('status', '"' + fileName + '" is already available from Dropbox...');
                         } else {
                             var data = loop.dataURItoBlob(loop.audio.get('src'));
                             if (data) {
-                                view.app.dispatcher.trigger('status', 'Saving "' + loop.get('name') + '" to Dropbox...');
-                                promises.push(view.app.models.dropBox.saveFileToDropbox(dropBoxDir + '/' + fileName, data));
+                                self.app.dispatcher.trigger('status', 'Saving "' + loop.get('name') + '" to Dropbox...');
+                                promises.push(self.app.models.dropBox.saveFileToDropbox(dropBoxDir + '/' + fileName, data));
                             }
                         }
                     }
@@ -148,9 +148,9 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                 .then(function(fileStats) {
                     if (fileStats.length > 0) {
                         var promises = _.map(fileStats, function(fileStat) {
-                            return view.app.models.dropBox.getShareURL(fileStat.path);
+                            return self.app.models.dropBox.getShareURL(fileStat.path);
                         });
-                        view.app.dispatcher.trigger('status', 'Getting URLs for the uploaded files...');
+                        self.app.dispatcher.trigger('status', 'Getting URLs for the uploaded files...');
                         return RSVP.all(promises);
                     }
                 })
@@ -161,22 +161,22 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                             var urlMatches = url.match(/.*\/([^\.]+)\./);
                             if (urlMatches && urlMatches[1]) {
                                 var loopFileId = urlMatches[1];
-                                var loop = view.model.get('loops').findWhere({loopFileId: loopFileId});
+                                var loop = self.model.get('loops').findWhere({loopFileId: loopFileId});
                                 loop.set('dropboxURL', url);
                             }
                         }
                     }
                 })
                 .then(function() {
-                    view.app.dispatcher.trigger('status', 'Saving your Looper metadata to our servers...');
-                    return view.model.saveWithPromise();
+                    self.app.dispatcher.trigger('status', 'Saving your Looper metadata to our servers...');
+                    return self.model.saveWithPromise();
                 })
                 .then(function() {
-                    view.app.dispatcher.trigger('status', 'Done!');
-                    view.app.dispatcher.trigger('looper-saved', view.model);
+                    self.app.dispatcher.trigger('status', 'Done!');
+                    self.app.dispatcher.trigger('looper-saved', self.model);
                 })
                 .catch(function(error) {
-                    console.log(error);
+                    self.app.views.alerts.createAlert('There was a problemn saving your looper - please try again.', 'danger');
                 });
         },
         
@@ -233,7 +233,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                     }
                 })
                 .catch(function(error) {
-                    console.log(error);
+                    self.app.views.alerts.createAlert('There was a problem loading the loop - please try again.', 'danger');
                 });
         },
         
@@ -249,7 +249,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                         self.app.dispatcher.trigger('looper-loaded', self.model);
                     })
                     .catch(function(error) {
-                        console.log(error);
+                        self.app.views.alerts.createAlert('There was a problem loading the looper - please try again.', 'danger');
                     });
             }
         },
@@ -281,7 +281,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         onLoopFileRead: function(params) {
             this.loadLoops([params])
                 .catch(function(error) {
-                    console.log(error);
+                    self.app.views.alerts.createAlert('There was a problem loading the loop file - please try again.', 'danger');
                 });
         },
         
