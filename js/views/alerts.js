@@ -24,7 +24,7 @@ define(['backbone'], function(Backbone) {
                     return self.show(res, self.$el);
                 })
                 .catch(function(error) {
-                    console.log(error);
+                    self.app.views.alerts.createAlert('Failed to load the alerts template.', 'danger');
                 })
                 ;
         },

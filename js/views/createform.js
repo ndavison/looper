@@ -5,9 +5,9 @@
  *
  */
 
-"use strict"
- 
 define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(Backbone, $, RSVP, Dropbox, Loop) {
+
+    "use strict";
     
     var View = Backbone.View.extend({
         
@@ -22,7 +22,8 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
                 self.getTemplate('/looper/views/loadfromdropbox.html').then(function(res) {
                     return self.show(res, self.$('div#dropbox-button-area'), true);
                 }).catch(function(error) {
-                    self.app.views.alerts.createAlert('Failed to read file - please try again.', 'danger');
+                    console.log(error);
+                    self.app.views.alerts.createAlert('Failed to load the dropbox button template.', 'danger');
                 });
             }
         },

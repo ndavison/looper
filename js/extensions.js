@@ -6,8 +6,6 @@
  */
 
 define(['backbone', 'jquery', 'rsvp'], function(Backbone, $, RSVP) {
-
-    "use strict";
     
     var Extensions = function() {
         
@@ -45,7 +43,7 @@ define(['backbone', 'jquery', 'rsvp'], function(Backbone, $, RSVP) {
                     };
                     
                     if (Backbone.View.prototype.templates[template]) {
-                        res = Backbone.View.prototype.templates[template];
+                        var res = Backbone.View.prototype.templates[template];
                         makeTemplate(res, data);
                     } else {
                         $.get(template + "?bust=" +  (new Date()).getTime()).done(function(res) {
