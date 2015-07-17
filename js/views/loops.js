@@ -116,6 +116,15 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         
         saveFormSubmit: function(ev) {
             ev.preventDefault();
+            var name = this.$('input[name=looper-name]').val();
+            if (!name) {
+                this.app.views.alerts.createAlert('You must provide a name for your looper.', 'danger');
+                return;
+            }
+            if (name.length < 4 || name.length > 30) {
+                this.app.views.alerts.createAlert('The looper name must be more than 4 characters, but less than 30.', 'danger');
+                return;
+            }
             this.saveLoops();
         },
                 
