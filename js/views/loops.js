@@ -45,6 +45,12 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
             }
         },
         
+        renameButtons: function() {
+            this.$('button.loop-button').each(function(i) {
+                $(this).find('span.loop-name').html(i + 1);
+            });
+        },
+        
         removeAllLoops: function() {
             this.stopLoops();
             this.$('button.loop-button').remove();
@@ -229,6 +235,9 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
             }
             
             return RSVP.all(promises)
+                .then(function() {
+                    self.renameButtons();
+                })
                 .then(function() {
                     return self.model.populateLoops(loops);
                 })

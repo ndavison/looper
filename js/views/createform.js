@@ -48,7 +48,7 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
                     var file = this.file;
                     var fileMatches = file.name.match(/\.(.*)$/);
                     var fileExtension = fileMatches && fileMatches[1] ? fileMatches[1] : '';
-                    self.app.dispatcher.trigger('file-read', {name: file.name, data: ev.target.result, fileType: file.type, fileExtension: fileExtension});
+                    self.app.dispatcher.trigger('file-read', {name: '', data: ev.target.result, fileType: file.type, fileExtension: fileExtension});
                 };
                 reader.onerror = function(error) {
                     self.app.views.alerts.createAlert('Failed to read file - please try again.', 'danger');
@@ -68,7 +68,7 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
                         var file = files[i];
                         var fileMatches = file.name.match(/\.(.*)$/);
                         var fileExtension = fileMatches && fileMatches[1] ? fileMatches[1] : '';
-                        self.app.dispatcher.trigger('file-read', {name: file.name, dropboxURL: file.link, fileExtension: fileExtension});
+                        self.app.dispatcher.trigger('file-read', {name: '', dropboxURL: file.link, fileExtension: fileExtension});
                     }
                 }
             }});
