@@ -1,0 +1,23 @@
+{
+  "name": "looper",
+  "version": "0.3.0",
+  "description": "Audio looper",
+  "main": "index.html",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-requirejs": "~0.4.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ndavison/looper.git"
+  },
+  "author": "Nathan Davison <ndavison85@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ndavison/looper/issues"
+  }
+}
