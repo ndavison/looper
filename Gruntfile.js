@@ -13,11 +13,30 @@ module.exports = function(grunt) {
                     out: 'js/main-build.js'
                 }
             }
+        },
+        
+        replace: {
+            dist: {
+                options: {
+                    patterns: [
+                        {
+                            match: /main\.js/,
+                            replacement: 'main-build.js'
+                        }
+                    ]
+                },
+                files: [
+                    {expand: true, flatten: true, src: ['index.html'], dest: ''}
+                ]
+            }
         }
         
     });
 
     grunt.loadNpmTasks('grunt-contrib-requirejs');
-    grunt.registerTask('default', ['requirejs']);
+    grunt.loadNpmTasks('grunt-replace');
+    
+    grunt.registerTask('default', []);
+    grunt.registerTask('prod', ['requirejs', 'replace']);
 
 };
