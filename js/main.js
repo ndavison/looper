@@ -6,7 +6,8 @@
  */
 
 requirejs.config({
-    baseUrl: '/looper/js',
+    urlArgs: "bust=" +  (new Date()).getTime(),
+    baseUrl: '/js',
     paths: {
         'jquery': '../bower_components/jquery/dist/jquery.min',
         'bootstrap': '../bower_components/bootstrap/dist/js/bootstrap.min',
@@ -33,8 +34,7 @@ requirejs.config({
         'Howler': {
             exports: 'Howl'
         }
-    },
-    urlArgs: "bust=" +  (new Date()).getTime()
+    }
 });
  
 requirejs(['app'], function(App) {
