@@ -47,6 +47,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-shell');
     
     grunt.registerTask('default', []);
-    grunt.registerTask('prod', ['requirejs', 'replace:prod', 'shell:bowerinstall', 'shell:dropboxinstall']);
+    grunt.registerTask('prod', ['shell:bowerinstall', 'shell:dropboxinstall', 'requirejs', 'replace:prod']);
 
 };
