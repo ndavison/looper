@@ -16,7 +16,7 @@ module.exports = function(grunt) {
         },
         
         replace: {
-            dist: {
+            prod: {
                 options: {
                     patterns: [
                         {
@@ -29,14 +29,27 @@ module.exports = function(grunt) {
                     {expand: true, flatten: true, src: ['index.html'], dest: ''}
                 ]
             }
+        },
+        
+        shell: {
+            npminstall: {
+                command: 'npm install'
+            },
+            bowerinstall: {
+                command: 'bower install'
+            },
+            dropboxinstall: {
+                command: 'cd bower_components/dropbox && npm install'
+            }
         }
         
     });
 
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-replace');
+    grunt.loadNpmTasks('grunt-shell');
     
     grunt.registerTask('default', []);
-    grunt.registerTask('prod', ['requirejs', 'replace']);
+    grunt.registerTask('prod', ['requirejs', 'replace:prod', 'shell:npminstall', 'shell:bowerinstall', 'shell:dropboxinstall']);
 
 };
