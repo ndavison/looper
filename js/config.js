@@ -15,7 +15,7 @@ define(function() {
         
         this.dropBoxDir = 'looper-audio';
         
-        this.dropboxAPIKey = 'zr16qymzqg21hzf';
+        this.dropboxAPIKey = 'hwa4du8r8utx5fa';
         
         this.dropboxDropinKey = '3oyl33j84sk1elk';
         
