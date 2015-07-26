@@ -11,7 +11,9 @@ define(['backbone', 'rsvp', 'models/loops', 'models/loop'], function(Backbone, R
     
     var Model = Backbone.Model.extend({
         
-        urlRoot: '/looper/api/loopers',
+        urlRoot: function() {
+            return this.app.config.siteRoot + '/api/loopers'
+        },
         
         idAttribute: '_id',
         

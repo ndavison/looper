@@ -63,11 +63,11 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
             }
             self.app.models.dropBox.getAccountInfo()
                 .then(function(info) {
-                    return self.getTemplate('/looper/views/signout.html', {})
+                    return self.getTemplate(self.app.config.siteRoot + '/views/signout.html', {})
                         .then(function(res) {
                             var promises = [
                                 self.show(res, self.$('#navbar-buttons'), true),
-                                self.getTemplate('/looper/views/signinmsg.html', {name: info.name}).then(function(res) {
+                                self.getTemplate(self.app.config.siteRoot + '/views/signinmsg.html', {name: info.name}).then(function(res) {
                                     return self.show(res, self.$('#navbar-buttons'), true);
                                 })
                             ];
@@ -84,7 +84,7 @@ define(['backbone', 'rsvp'], function(Backbone, RSVP) {
                 self.$('p#signin-msg').remove();
                 self.$('button#signout-btn').remove();
             }
-            self.getTemplate('/looper/views/signin.html', {})
+            self.getTemplate(self.app.config.siteRoot + '/views/signin.html', {})
                 .then(function(res) {
                     return self.show(res, self.$('#navbar-buttons'), true);
                 }).catch(function(error) {

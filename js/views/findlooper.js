@@ -37,7 +37,7 @@ define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
         
         showResults: function() {
             var self = this;
-            self.getTemplate('/looper/views/findlooper-results.html', {loopers: self.collection.models}).then(function(response) {
+            self.getTemplate(self.app.config.siteRoot + '/views/findlooper-results.html', {loopers: self.collection.models}).then(function(response) {
                 return self.show(response, self.$('div#findlooper-results'));
             }).catch(function(error) {
                 self.app.views.alerts.createAlert('Failed to load the search results template.', 'danger');
@@ -66,7 +66,7 @@ define(['backbone', 'models/loopers'], function(Backbone, Loopers) {
         
         render: function() {
             var self = this;
-            self.getTemplate('/looper/views/findlooper.html').then(function(res) {
+            self.getTemplate(self.app.config.siteRoot + '/views/findlooper.html').then(function(res) {
                 self.show(res);
                 self.delegateEvents();
             })

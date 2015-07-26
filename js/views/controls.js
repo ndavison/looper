@@ -47,7 +47,7 @@ define(['backbone'], function(Backbone) {
             if (self.$('input[name=loopers-volume]').length == 0 &&
                 self.$('input[name=loopers-pitch]').length == 0
             ) {
-                self.getTemplate('/looper/views/controls.html', {volume: self.defaultValues.volume, pitch: self.defaultValues.pitch})
+                self.getTemplate(self.app.config.siteRoot + '/views/controls.html', {volume: self.defaultValues.volume, pitch: self.defaultValues.pitch})
                     .then(function(res) {
                         return self.show(res);
                     }).catch(function(error) {

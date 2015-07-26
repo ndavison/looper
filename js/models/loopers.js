@@ -12,7 +12,7 @@ define(['backbone', 'models/looper'], function(Backbone, Looper) {
     var Collection = Backbone.Collection.extend({
         
         url: function() {
-            var url = '/looper/api/loopers';
+            var url = this.app.config.siteRoot + '/api/loopers';
             if (this.searchterm) {
                 url += '/search/' + this.searchterm;
             }

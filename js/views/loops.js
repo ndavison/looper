@@ -24,7 +24,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         addLoopButton: function(loopInfo) {
             var self = this;
             return new RSVP.Promise(function(resolve, reject) {
-                return self.getTemplate('/looper/views/playloop.html', {loopFileId: loopInfo.loopFileId, name: loopInfo.name, enabled: loopInfo.isReady ? true : false})
+                return self.getTemplate(self.app.config.siteRoot + '/views/playloop.html', {loopFileId: loopInfo.loopFileId, name: loopInfo.name, enabled: loopInfo.isReady ? true : false})
                 .then(function(res) {
                     return self.show(res, self.$('div#loops-buttons'), true);
                 }).then(function(loopEl) {
@@ -59,7 +59,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         addSaveForm: function() {
             var self = this;
             if (self.app.mode == 'create' && self.model.get('loops').length > 0 && self.$('div#loops-saveform form').length == 0) {
-                self.getTemplate('/looper/views/saveloops.html', {authenticated: self.app.models.dropBox.isAuthenticated()})
+                self.getTemplate(self.app.config.siteRoot + '/views/saveloops.html', {authenticated: self.app.models.dropBox.isAuthenticated()})
                     .then(function(res) {
                         return self.show(res, self.$('div#loops-saveform'), false);
                     }).catch(function(error) {
@@ -76,7 +76,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
         
         addShareURLForm: function(url) {
             var self = this;
-            return self.getTemplate('/looper/views/shareurl.html', {url: url})
+            return self.getTemplate(self.app.config.siteRoot + '/views/shareurl.html', {url: url})
                 .then(function(res) {
                     return self.show(res, self.$('div#looper-copyform'), false);
                 })

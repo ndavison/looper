@@ -11,7 +11,7 @@ define(function() {
     
     var Config = function() {
         
-        this.siteRoot = '/looper';
+        this.siteRoot = '';
         
         this.dropBoxDir = 'looper-audio';
         

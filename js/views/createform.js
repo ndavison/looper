@@ -19,7 +19,7 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
         addLoadFromDropboxButton: function() {
             var self = this;
             if (self.$('button#dropbox-loop').length == 0) {
-                self.getTemplate('/looper/views/loadfromdropbox.html').then(function(res) {
+                self.getTemplate(self.app.config.siteRoot + '/views/loadfromdropbox.html').then(function(res) {
                     return self.show(res, self.$('div#dropbox-button-area'), true);
                 }).catch(function(error) {
                     console.log(error);
@@ -81,7 +81,7 @@ define(['backbone', 'jquery','rsvp', 'dropboxdropins', 'models/loop'], function(
         
         render: function() {
             var self = this;
-            self.getTemplate('/looper/views/createform.html').then(function(res) {
+            self.getTemplate(self.app.config.siteRoot + '/views/createform.html').then(function(res) {
                 self.show(res);
                 self.delegateEvents();
             }).then(function() {

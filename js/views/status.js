@@ -17,7 +17,7 @@ define(['backbone'], function(Backbone) {
         
         addStatusMessage: function(message) {
             var self = this;
-            self.getTemplate('/looper/views/statusmessage.html', {message: message}).then(function(res) {
+            self.getTemplate(self.app.config.siteRoot + '/views/statusmessage.html', {message: message}).then(function(res) {
                 return self.show(res, self.$el, true)
             }).then(function(messageEl) {
                 messageEl.delay(5000).fadeOut(300);
