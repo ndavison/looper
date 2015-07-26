@@ -32,9 +32,6 @@ module.exports = function(grunt) {
         },
         
         shell: {
-            npminstall: {
-                command: 'npm install'
-            },
             bowerinstall: {
                 command: 'bower install'
             },
@@ -50,6 +47,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-shell');
     
     grunt.registerTask('default', []);
-    grunt.registerTask('prod', ['requirejs', 'replace:prod', 'shell:npminstall', 'shell:bowerinstall', 'shell:dropboxinstall']);
+    grunt.registerTask('prod', ['requirejs', 'replace:prod', 'shell:bowerinstall', 'shell:dropboxinstall']);
 
 };
