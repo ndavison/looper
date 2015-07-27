@@ -148,17 +148,23 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                     for (var i = 0; i < self.model.get('loops').models.length; i++) {
                         var loop = self.model.get('loops').models[i];
                         var fileName = loop.get('loopFileId') + '.' + loop.get('fileExtension');
-                        if (!loop.get('dropboxURL')) {
+                        var filePath = dropBoxDir + '/' + fileName;
+                        if (loop.get('dropboxURL')) {
                             var data = loop.dataURItoBlob(loop.audio.get('src'));
                             if (data) {
                                 self.app.dispatcher.trigger('status', 'Saving loop to Dropbox...');
-                                promises.push(self.app.models.dropBox.saveFileToDropbox(dropBoxDir + '/' + fileName, data));
+                                promises.push(self.app.models.dropBox.saveFileToDropbox(filePath, data));
                             }
+                        } else {
+                            promises.push(RSVP.Promise(function(resolve) {
+                                resolve({path: filePath});
+                            }));
                         }
                     }
                     return RSVP.all(promises);
                 })
                 .then(function(fileStats) {
+                    console.log(fileStats);
                     if (fileStats.length > 0) {
                         var promises = _.map(fileStats, function(fileStat) {
                             return self.app.models.dropBox.getShareURL(fileStat.path);
@@ -169,6 +175,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                 })
                 .then(function(shareURLs) {
                     if (shareURLs) {
+                        console.log(shareURLs);
                         for (var i = 0; i < shareURLs.length; i++) {
                             var url = shareURLs[i].url;
                             var urlMatches = url.match(/.*\/([^\.]+)\./);
