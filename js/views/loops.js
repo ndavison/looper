@@ -153,7 +153,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                         } else {
                             var data = loop.dataURItoBlob(loop.audio.get('src'));
                             if (data) {
-                                self.app.dispatcher.trigger('status', 'Saving "' + loop.get('name') + '" to Dropbox...');
+                                self.app.dispatcher.trigger('status', 'Saving loop to Dropbox...');
                                 promises.push(self.app.models.dropBox.saveFileToDropbox(dropBoxDir + '/' + fileName, data));
                             }
                         }
