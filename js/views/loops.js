@@ -148,9 +148,7 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                     for (var i = 0; i < self.model.get('loops').models.length; i++) {
                         var loop = self.model.get('loops').models[i];
                         var fileName = loop.get('loopFileId') + '.' + loop.get('fileExtension');
-                        if (loop.get('dropboxURL')) {
-                            self.app.dispatcher.trigger('status', '"' + fileName + '" is already available from Dropbox...');
-                        } else {
+                        if (!loop.get('dropboxURL')) {
                             var data = loop.dataURItoBlob(loop.audio.get('src'));
                             if (data) {
                                 self.app.dispatcher.trigger('status', 'Saving loop to Dropbox...');
