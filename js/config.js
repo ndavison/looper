@@ -17,7 +17,7 @@ define(function() {
         
         this.dropboxAPIKey = 'hwa4du8r8utx5fa';
         
-        this.dropboxDropinKey = '3oyl33j84sk1elk';
+        this.dropboxDropinKey = 'hwa4du8r8utx5fa';
         
         this.oAuthReceiverURL = 'https://' + window.location.hostname + this.siteRoot + '/dropbox-receiver.html';
         
