@@ -200,12 +200,6 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                 });
         },
         
-        changeVolumes: function(level) {
-            this.model.get('loops').forEach(function(loop) {
-                loop.audio.setVolume(level);
-            });
-        },
-        
         changePitches: function(level) {
             this.model.get('loops').forEach(function(loop) {
                 loop.audio.setPitch(level);
@@ -250,7 +244,6 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
                     var loops = self.model.get('loops').models;
                     for (var i = 0; i < loops.length; i++) {
                         self.enableLoopButton(loops[i].get('loopFileId'));
-                        loops[i].audio.setVolume(self.app.views.controls.getVolume());
                         loops[i].audio.setPitch(self.app.views.controls.getPitch());
                         self.app.dispatcher.trigger('loop-loaded', loops[i]);
                     }
@@ -322,7 +315,6 @@ define(['backbone', 'rsvp', 'models/looper', 'models/loop'], function(Backbone, 
             this.listenTo(this.app.dispatcher, 'looper-navigated', this.onLooperNavigated);
             this.listenTo(this.app.dispatcher, 'file-read', this.onLoopFileRead);
             this.listenTo(this.app.dispatcher, 'loop-loaded', this.addSaveForm);
-            this.listenTo(this.app.dispatcher, 'change-volume', this.changeVolumes);
             this.listenTo(this.app.dispatcher, 'change-pitch', this.changePitches);
             this.listenTo(this.app.dispatcher, 'signed-in-user-info', this.setUserId);
         },

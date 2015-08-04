@@ -14,20 +14,11 @@ define(['backbone'], function(Backbone) {
         el: '#view-controls',
         
         events: {
-            'input input[name=loopers-volume]': 'changedVolume',
             'input input[name=loopers-pitch]': 'changedPitch'
-        },
-                
-        changedVolume: function(ev) {
-            this.app.dispatcher.trigger('change-volume', this.getVolume());
         },
         
         changedPitch: function(ev) {
             this.app.dispatcher.trigger('change-pitch', this.getPitch());
-        },
-        
-        getVolume: function() {
-            return (this.$('input[name=loopers-volume]').val() / 100);
         },
         
         getPitch: function() {
@@ -44,10 +35,8 @@ define(['backbone'], function(Backbone) {
         
         render: function() {
             var self = this;
-            if (self.$('input[name=loopers-volume]').length == 0 &&
-                self.$('input[name=loopers-pitch]').length == 0
-            ) {
-                self.getTemplate(self.app.config.siteRoot + '/views/controls.html', {volume: self.defaultValues.volume, pitch: self.defaultValues.pitch})
+            if (self.$('input[name=loopers-pitch]').length == 0) {
+                self.getTemplate(self.app.config.siteRoot + '/views/controls.html', {pitch: self.defaultValues.pitch})
                     .then(function(res) {
                         return self.show(res);
                     }).catch(function(error) {
