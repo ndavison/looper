@@ -13,8 +13,31 @@ define(['backbone'], function(Backbone) {
         
         el: '#view-controls',
         
+        pitchLoop: null,
+        
         events: {
-            'input input[name=loopers-pitch]': 'changedPitch'
+            'input input[name=loopers-pitch]': 'changedPitch',
+            'click button#autopitch-btn': 'handleAutoPitchClick'
+        },
+        
+        handleAutoPitchClick: function(ev) {
+            var self = this;
+            ev.preventDefault();
+            var el = $(ev.currentTarget);
+            
+            if (el.hasClass('active')) {
+                clearTimeout(self.pitchLoop);
+            } else {
+                var loop = function() {
+                    self.pitchLoop = setTimeout(function() {
+                        self.setPitch((self.getPitch() * 100) + 1);
+                        loop();
+                    }, 5000);
+                };
+                loop();
+            }
+            
+            el.toggleClass('active');
         },
         
         changedPitch: function(ev) {
@@ -23,6 +46,10 @@ define(['backbone'], function(Backbone) {
         
         getPitch: function() {
             return (this.$('input[name=loopers-pitch]').val() / 100);
+        },
+        
+        setPitch: function(val) {
+            this.$('input[name=loopers-pitch]').val(val).trigger('input');
         },
         
         initialize: function() {

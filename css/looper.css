@@ -26,6 +26,10 @@ button {
     cursor: pointer;
 }
 
+input#pitch-range {
+    height: 33px;
+}
+
 div#credit {
     position: fixed;
     padding: 12px;
